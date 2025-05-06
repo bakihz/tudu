@@ -5,18 +5,52 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
+      content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net"
     />
     <meta
       http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
+      content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net"
     />
     <title>Hello from Electron renderer!</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7D4pr2IK8iDkz0W1CW1LksE2MfH0z6pAC"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Hello from Electron renderer!</h1>
-    <p>👋</p>
-    <p id="info"></p>
+    <div class="container mt-5">
+      <h1 class="text-center">Hello from Electron renderer!</h1>
+      <div id="todo-app" class="mt-4">
+        <h2>Todo App</h2>
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            id="new-todo"
+            class="form-control"
+            placeholder="Enter a new task"
+          />
+          <button id="add-todo" class="btn btn-primary">Add</button>
+        </div>
+        <ul id="todo-list" class="list-group"></ul>
+      </div>
+      <p id="info" class="mt-3"></p>
+    </div>
+
+    <script src="renderer.js"></script>
+    <!-- Removed redundant script block to avoid conflicts -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-w76A2YpOJ4Md+PpHLmuhfTAU6auU7b6Y1ztT1FQZA+7pP0h91scM2kR7khaP4b9+"
+      crossorigin="anonymous"
+    ></script>
+    <script src="index.js"></script>
+    </script>
   </body>
-  <script src="renderer.js"></script>
 </html>
