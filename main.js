@@ -1,7 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require("electron/main");
+const { app, BrowserWindow } = require("electron");
 const path = require("path");
 
-const createWindow = () => {
+const createWindow = (page) => {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -13,16 +13,16 @@ const createWindow = () => {
     },
   });
 
-  win.loadFile("index.html");
+  win.loadFile(page); // Load the specified page
 };
 
 app.whenReady().then(() => {
-  ipcMain.handle("ping", () => "pong");
-  createWindow();
+  // Example: Load admin.html by default
+  createWindow("admin.html");
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+      createWindow("admin.html");
     }
   });
 });

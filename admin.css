@@ -38,7 +38,7 @@ h1 {
 }
 
 /* Input field styling */
-#new-todo {
+#new-todo-admin {
   border: 1px solid #d1d1d1;
   border-radius: 20px;
   padding: 10px 15px;
@@ -48,12 +48,12 @@ h1 {
   transition: border-color 0.3s ease;
 }
 
-#new-todo:focus {
+#new-todo-admin:focus {
   border-color: #0078d4;
 }
 
 /* Add button styling */
-#add-todo {
+#add-todo-admin {
   background-color: #0078d4;
   border-color: #0078d4;
   color: #fff;
@@ -63,17 +63,17 @@ h1 {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#add-todo:hover {
+#add-todo-admin:hover {
   background-color: #005a9e;
   transform: scale(1.05);
 }
 
 /* Todo list styling */
-#todo-list {
+#todo-list-admin {
   margin-top: 20px;
 }
 
-#todo-list .list-group-item {
+#todo-list-admin .list-group-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,7 +85,7 @@ h1 {
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-#todo-list .list-group-item:hover {
+#todo-list-admin .list-group-item:hover {
   background-color: #f3f3f3;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
