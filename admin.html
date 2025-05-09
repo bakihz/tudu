@@ -3,10 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <title>Admin Page</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net;"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7D4pr2IK8iDkz0W1CW1LksE2MfH0z6pAC"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
     <link
@@ -32,25 +36,95 @@
           <button id="add-todo-admin" class="btn btn-primary">Add</button>
         </div>
         <ul id="todo-list-admin" class="list-group">
-          <!-- Placeholder for dynamically added tasks -->
-          <li
-            id="task-template-admin"
-            class="list-group-item d-flex justify-content-between align-items-center"
-            style="display: none"
-          >
-            <div class="d-flex align-items-center">
-              <button class="complete-task me-3">
-                <i class="bi bi-circle"></i>
-              </button>
-              <span class="task-text"></span>
-            </div>
-          </li>
+          <!-- Placeholder task removed -->
         </ul>
+      </div>
+
+      <div class="container mt-4">
+        <h2>Add New Task</h2>
+        <form id="task-form">
+          <div class="mb-3">
+            <label for="task-name" class="form-label">Task Name</label>
+            <input
+              type="text"
+              id="task-name"
+              class="form-control"
+              placeholder="Enter task name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label for="task-type" class="form-label">Task Type</label>
+            <select id="task-type" class="form-select">
+              <option value="1">Urgent</option>
+              <option value="2" selected>Normal</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="task-deadline" class="form-label">Deadline</label>
+            <input
+              type="datetime-local"
+              id="task-deadline"
+              class="form-control"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="task-recurring" class="form-label">Is Recurring?</label>
+            <select id="task-recurring" class="form-select">
+              <option value="true">Yes</option>
+              <option value="false" selected>No</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="task-interval" class="form-label"
+              >Interval (in days)</label
+            >
+            <input
+              type="number"
+              id="task-interval"
+              class="form-control"
+              placeholder="Enter interval (if recurring)"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="task-details" class="form-label">Details</label>
+            <textarea
+              id="task-details"
+              class="form-control"
+              rows="3"
+              placeholder="Enter task details"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
       </div>
 
       <button id="go-to-user" class="btn btn-primary mt-3">
         Go to User Page
       </button>
+    </div>
+
+    <!-- Sidebar for task details -->
+    <div id="task-sidebar" class="task-sidebar">
+      <div class="sidebar-header">
+        <h3 id="task-title">Task Title</h3>
+        <button id="close-sidebar" class="btn-close"></button>
+      </div>
+      <div class="sidebar-content">
+        <p><strong>Reminder:</strong> <span id="task-reminder">None</span></p>
+        <p><strong>Due Date:</strong> <span id="task-due-date">None</span></p>
+        <p><strong>Recurring:</strong> <span id="task-recurring">No</span></p>
+        <p>
+          <strong>Assigned To:</strong> <span id="task-assigned">None</span>
+        </p>
+        <p><strong>Notes:</strong></p>
+        <textarea
+          id="task-notes"
+          class="form-control"
+          rows="4"
+          readonly
+        ></textarea>
+      </div>
     </div>
 
     <script src="admin.js"></script>

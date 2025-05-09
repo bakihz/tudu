@@ -4,11 +4,11 @@ const sql = require("mssql");
 const config = {
   user: "tudu", // Replace with your SQL Server username
   password: "Yakamoz57", // Replace with your SQL Server password
-  server: "SERVER", // Replace with your SQL Server hostname or IP
+  server: "192.168.5.11", // Replace with your SQL Server hostname or IP
   database: "tuduDB", // Replace with your database name
   port: 1433, // Default SQL Server port
   options: {
-    encrypt: true, // Use encryption if required
+    encrypt: false, // Use encryption if required
     trustServerCertificate: true, // Set to true if using a self-signed certificate
   },
 };
@@ -22,9 +22,6 @@ const poolPromise = new sql.ConnectionPool(config)
   })
   .catch((err) => {
     console.error("Database connection failed:", config.server, err);
-    console.error("Error details:", err.originalError);
-    console.error("Error code:", err.code);
-    console.error("Error number:", err.number);
     process.exit(1);
   });
 

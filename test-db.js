@@ -1,14 +1,12 @@
-const { poolPromise } = require("./db");
+const { pool, sql } = require("./db");
 
-const testDatabaseConnection = async () => {
+(async () => {
   try {
     const pool = await poolPromise;
     console.log("Database connection successful!");
-    const result = await pool.request().query("SELECT 1 AS Test");
+    const result = await pool.request().query("SELECT 1 AS test");
     console.log("Test query result:", result.recordset);
-  } catch (err) {
-    console.error("Error connecting to the database:", err);
+  } catch (error) {
+    console.error("Error testing db.js:", error);
   }
-};
-
-testDatabaseConnection();
+})();

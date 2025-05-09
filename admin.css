@@ -153,3 +153,46 @@ h1 {
 #context-menu button:hover {
   background-color: #f3f3f3;
 }
+
+/* Sidebar styling */
+.task-sidebar {
+  position: fixed;
+  top: 0;
+  right: -400px; /* Hidden by default */
+  width: 400px;
+  height: 100%;
+  background-color: #1e1e1e; /* Dark background */
+  color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.task-sidebar.open {
+  right: 0; /* Slide in when open */
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.sidebar-content p {
+  margin-bottom: 10px;
+}
+
+.sidebar-content textarea {
+  background-color: #2e2e2e;
+  color: #fff;
+  border: 1px solid #444;
+  resize: none;
+}

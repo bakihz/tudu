@@ -14,8 +14,20 @@
     "electron": "^36.1.0"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
     "git": "^0.1.5",
     "mssql": "^11.0.1",
     "telnet": "^0.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bakihz/tudu.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/bakihz/tudu/issues"
+  },
+  "homepage": "https://github.com/bakihz/tudu#readme"
 }
