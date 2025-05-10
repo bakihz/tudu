@@ -1,5 +1,5 @@
 // preload.js
-const { contextBridge } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 const { poolPromise, sql } = require("./db");
 
 contextBridge.exposeInMainWorld("api", {
@@ -34,4 +34,7 @@ contextBridge.exposeInMainWorld("api", {
         )
       `);
   },
+
+  updateTask: (task) => ipcRenderer.invoke("update-task", task),
+  deleteTask: (taskId) => ipcRenderer.invoke("delete-task", taskId),
 });

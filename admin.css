@@ -13,12 +13,27 @@ body {
 
 /* Center the todo app container */
 .container {
-  max-width: 500px;
-  margin: 0 auto;
+  margin-left: 220px; /* Same as sidebar width */
+  min-height: 100vh; /* Fill vertical space */
+  width: calc(100% - 220px); /* Fill horizontal space minus sidebar */
   padding: 20px;
   border-radius: 12px;
   background-color: #ffffff; /* White background */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.main-content {
+  margin-left: 220px; /* Same as sidebar width */
+  min-height: 100vh; /* Fill vertical space */
+  width: calc(100% - 220px); /* Fill horizontal space minus sidebar */
+  padding: 20px;
+  border-radius: 0;
+  background-color: #ffffff;
+  box-shadow: none;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header styling */
@@ -75,8 +90,7 @@ h1 {
 
 #todo-list-admin .list-group-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 10px 15px;
   border: none;
   border-radius: 8px;
@@ -195,4 +209,82 @@ h1 {
   color: #fff;
   border: 1px solid #444;
   resize: none;
+}
+
+/* Side navigation styling */
+#side-nav {
+  height: 100vh;
+  min-width: 220px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-right: 1px solid #ddd;
+  background: #f8f9fa;
+  z-index: 1050;
+}
+
+#side-nav .nav-link {
+  color: #333;
+  font-weight: 500;
+}
+
+#side-nav .nav-link.active,
+#side-nav .nav-link:hover {
+  background: #e9ecef;
+  color: #007bff;
+  border-radius: 4px;
+}
+
+.add-task-sidebar {
+  position: fixed;
+  top: 0;
+  right: -450px; /* Hidden by default */
+  width: 450px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+  transition: right 0.3s;
+  z-index: 2000;
+  overflow-y: auto;
+}
+.add-task-sidebar.open {
+  right: 0;
+}
+.add-task-sidebar .sidebar-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.edit-task-sidebar {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 450px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+  transition: right 0.3s;
+  z-index: 2100;
+  overflow-y: auto;
+}
+.edit-task-sidebar.open {
+  right: 0;
+}
+.edit-task-sidebar .sidebar-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #eee;
+}
+.edit-pencil {
+  cursor: pointer;
+  margin-left: 10px;
+  color: #007bff;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+.edit-pencil:hover {
+  color: #0056b3;
+}
+.edit-input {
+  width: 70%;
+  margin-right: 10px;
 }
