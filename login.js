@@ -1,3 +1,10 @@
+document.addEventListener("DOMContentLoaded", function () {
+  const usernameInput = document.getElementById("username");
+  if (usernameInput) {
+    usernameInput.focus();
+  }
+});
+
 document
   .getElementById("login-form")
   .addEventListener("submit", async (event) => {
@@ -19,6 +26,8 @@ document
       const result = await response.json();
 
       if (response.ok) {
+        window.currentUserId = result.userId;
+        localStorage.setItem("currentUserId", result.userId);
         // Redirect based on user type
         if (result.userType === "admin") {
           window.location.href = "admin.html";

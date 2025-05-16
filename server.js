@@ -13,23 +13,24 @@ app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // Get a connection from the pool
     const pool = await poolPromise;
-
-    // Query the database for the user
     const result = await pool
       .request()
-      .input("UserId", sql.NVarChar, username) // Use 'UserId' instead of 'username'
-      .input("Password", sql.NVarChar, password) // Use 'Password' instead of 'password'
+      .input("UserName", sql.NVarChar, username)
+      .input("Password", sql.NVarChar, password)
       .query(
-        "SELECT UserType FROM Users WHERE UserId = @UserId AND Password = @Password"
+        "SELECT UserID, UserName, UserType FROM Users WHERE UserName = @UserName AND Password = @Password"
       );
 
     if (result.recordset.length > 0) {
       // User found
-      res.json({ userType: result.recordset[0].UserType });
+      const user = result.recordset[0];
+      res.json({
+        userId: user.UserID, // <-- Make sure this is included
+        userName: user.UserName,
+        userType: user.UserType,
+      });
     } else {
-      // User not found
       res.status(401).json({ message: "Invalid username or password." });
     }
   } catch (error) {
@@ -42,14 +43,14 @@ app.post("/api/login", async (req, res) => {
 
 // Tasks endpoint
 app.post("/api/tasks", async (req, res) => {
-  const { userId } = req.body; // Replace 'userId' with the actual user ID from the request
+  const { userId } = req.body; // userId from the request
 
   try {
     const pool = await poolPromise;
     const result = await pool
       .request()
       .input("UserID", sql.Int, userId)
-      .query("SELECT * FROM Tasks WHERE UserID = @UserID");
+      .query("SELECT * FROM Tasks WHERE CreatorID = @UserID");
 
     res.json(result.recordset);
   } catch (error) {

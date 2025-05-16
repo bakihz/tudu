@@ -45,27 +45,34 @@ app.on("activate", () => {
 ipcMain.handle("update-task", async (event, task) => {
   try {
     const pool = await poolPromise;
-    await pool.request()
+    await pool
+      .request()
       .input("TaskID", sql.Int, task.TaskID)
-      .input("Name", sql.NVarChar, task.Name)
+      .input("TaskName", sql.NVarChar, task.TaskName)
       .input("Details", sql.NVarChar, task.Details)
-      .input("Deadline", sql.DateTime, task.Deadline ? new Date(task.Deadline) : null)
+      .input(
+        "Deadline",
+        sql.DateTime,
+        task.Deadline ? new Date(task.Deadline) : null
+      )
       .input("TaskType", sql.Int, task.TaskType)
       .input("IsRecurring", sql.Bit, task.IsRecurring)
-      // Add other fields as needed
+      .input("UserID", sql.Int, task.UserID) // Add this line if needed
+      .input("Tick", sql.Bit, task.Tick) // Add this line if needed
       .query(`
         UPDATE Tasks SET
-          Name = @Name,
+          TaskName = @TaskName,
           Details = @Details,
           Deadline = @Deadline,
           TaskType = @TaskType,
-          IsRecurring = @IsRecurring
+          IsRecurring = @IsRecurring,
+          Tick = @Tick
         WHERE TaskID = @TaskID
       `);
     const result = await pool.request().query(`
       SELECT 
         t.*, 
-        u.Name AS CreatorName
+        u.UserName AS CreatorName
       FROM Tasks t
       LEFT JOIN Users u ON t.CreatorID = u.UserID
     `);
@@ -79,17 +86,23 @@ ipcMain.handle("update-task", async (event, task) => {
 ipcMain.handle("add-task", async (event, task) => {
   try {
     const pool = await poolPromise;
-    await pool.request()
-      .input("Name", sql.NVarChar, task.name)
-      .input("Details", sql.NVarChar, task.details)
-      .input("Deadline", sql.DateTime, task.deadline ? new Date(task.deadline) : null)
-      .input("TaskType", sql.Int, task.taskType)
-      .input("IsRecurring", sql.Bit, task.isRecurring)
-      .input("CreatorID", sql.Int, task.creator) // <-- Make sure this is set!
-      // Add other fields as needed
+    await pool
+      .request()
+      .input("TaskName", sql.NVarChar, task.TaskName)
+      .input("Details", sql.NVarChar, task.Details)
+      .input(
+        "Deadline",
+        sql.DateTime,
+        task.Deadline ? new Date(task.Deadline) : null
+      )
+      .input("TaskType", sql.Int, task.TaskType)
+      .input("IsRecurring", sql.Bit, task.IsRecurring)
+      .input("Tick", sql.Bit, task.Tick)
+      .input("CreatorID", sql.Int, task.CreatorID) // <-- Make sure this is set!
+      .input("UserID", sql.Int, task.UserID) // <-- Make sure this is set!
       .query(`
-        INSERT INTO Tasks (Name, Details, Deadline, TaskType, IsRecurring, CreatorID)
-        VALUES (@Name, @Details, @Deadline, @TaskType, @IsRecurring, @CreatorID)
+        INSERT INTO Tasks (TaskName, Details, Deadline, TaskType, IsRecurring, CreatorID, Tick, UserID)
+        VALUES (@TaskName, @Details, @Deadline, @TaskType, @IsRecurring, @CreatorID, @Tick, @UserID)
       `);
     return { success: true };
   } catch (err) {
@@ -102,12 +115,24 @@ ipcMain.handle("get-tasks", async () => {
   try {
     const pool = await poolPromise;
     const result = await pool.request().query(`
-      SELECT 
-        t.*, 
-        u.Name AS CreatorName
-      FROM Tasks t
-      LEFT JOIN Users u ON t.CreatorID = u.UserID
-    `);
+  SELECT
+    t.TaskID,
+    t.Tick,
+    t.TaskName,
+    t.CompletionTime,
+    t.TaskType,
+    t.TaskCreationDate,
+    t.Deadline,
+    t.Interval,
+    t.IsRecurring,
+    t.UserID,
+    t.CreatorID,
+    t.Details,
+    u.UserName AS CreatorName
+  FROM Tasks t
+  LEFT JOIN Users u ON t.CreatorID = u.UserID
+`);
+    // Return the tasks with the creator's name
     return result.recordset;
   } catch (err) {
     console.error("Error loading tasks:", err);
@@ -118,12 +143,26 @@ ipcMain.handle("get-tasks", async () => {
 ipcMain.handle("delete-task", async (event, taskId) => {
   try {
     const pool = await poolPromise;
-    await pool.request()
+    await pool
+      .request()
       .input("TaskID", sql.Int, taskId)
       .query("DELETE FROM Tasks WHERE TaskID = @TaskID");
     return { success: true };
   } catch (err) {
     console.error("Error deleting task:", err);
     return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle("get-users", async () => {
+  try {
+    const pool = await poolPromise;
+    const result = await pool
+      .request()
+      .query("SELECT UserID, UserName FROM Users");
+    return result.recordset;
+  } catch (err) {
+    console.error("Error loading users:", err);
+    return [];
   }
 });
