@@ -5,6 +5,13 @@ body {
   color: #333;
   margin: 0;
   padding: 0;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  padding-top: 15vh;
 }
 * {
   padding: 0;
@@ -152,4 +159,13 @@ h1 {
 
 #context-menu button:hover {
   background-color: #f3f3f3;
+}
+
+#login-container,
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 30vh;
 }

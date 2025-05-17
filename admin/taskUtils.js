@@ -1,6 +1,6 @@
 import { addTask } from "./api.js";
 
-export async function createNextRecurringTask(task) {
+export async function createNextRecurringTask(task, delayMs = 600) {
   if (!task.Interval || !task.Deadline) return;
 
   const nextDeadline = getNextDeadline(task.Deadline, task.Interval);
@@ -12,6 +12,11 @@ export async function createNextRecurringTask(task) {
     TaskCreationDate: task.TaskCreationDate, // Copy the original creation date
   };
   delete newTask.TaskID;
+
+  // Add delay before creating the next task
+  if (delayMs > 0) {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
   await addTask(newTask);
 }
 

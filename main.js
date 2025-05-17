@@ -8,6 +8,7 @@ app.on("ready", () => {
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    fullscreen: false, // Not fullscreen
     webPreferences: {
       preload: path.join(__dirname, "preload.js"), // Ensure the correct path to preload.js
       contextIsolation: true, // Enable context isolation
@@ -16,6 +17,8 @@ app.on("ready", () => {
       sandbox: false, // Allow Node.js modules in preload
     },
   });
+
+  win.maximize(); // <-- This will maximize the window
 
   win.loadFile("login.html");
 });

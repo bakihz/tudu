@@ -288,3 +288,65 @@ h1 {
   width: 70%;
   margin-right: 10px;
 }
+
+/* Fade in for creation/copy */
+.task-fade-in {
+  animation: taskFadeIn 0.5s;
+}
+@keyframes taskFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade out for deletion */
+.task-fade-out {
+  animation: taskFadeOut 0.4s forwards;
+}
+@keyframes taskFadeOut {
+  to {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Completion (line-through + color) */
+.task-completed {
+  transition: color 0.3s;
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+/* Add to your CSS */
+.task-completed-animate {
+  animation: taskCompleteFlash 0.4s;
+}
+@keyframes taskCompleteFlash {
+  0% {
+    background: #e0ffe0;
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.task-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.urgent-text {
+  color: #e53935;
+  font-weight: bold;
+}
+.list-group-item {
+  padding: 12px 18px;
+}

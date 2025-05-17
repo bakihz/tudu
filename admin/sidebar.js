@@ -120,9 +120,17 @@ export function openEditSidebar(task, loadTasksFromDatabase) {
         if (window.api && window.api.deleteTask) {
           await window.api.deleteTask(task.TaskID || task.id);
         }
+        // Find the corresponding list item in the task list and fade it out
+        const listItem = document.querySelector(
+          `[data-task-id="${task.TaskID || task.id}"]`
+        );
+        if (listItem) {
+          listItem.classList.add("task-fade-out");
+          setTimeout(() => listItem.remove(), 400);
+        }
         editTaskSidebar.classList.remove("open");
         if (typeof loadTasksFromDatabase === "function") {
-          await loadTasksFromDatabase();
+          setTimeout(() => loadTasksFromDatabase(), 400);
         }
       }
     });
