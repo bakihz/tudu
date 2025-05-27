@@ -38,12 +38,11 @@
       <a href="users.html" class="nav-link mb-2">Users</a>
       <a href="tasks.html" class="nav-link mb-2">Tasks</a>
       <a href="settings.html" class="nav-link mb-2">Settings</a>
-      <a href="logout.html" class="nav-link text-danger mt-auto">Logout</a>
+      <a href="#" id="logout-link" class="nav-link text-danger mt-auto">Logout</a>
     </nav>
 
     <div class="main-content">
-      <h1 class="text-center">Admin Page</h1>
-      <p class="text-center">Manage tasks and users here.</p>
+      <h1 class="text-center">Tudu</h1>
 
       <div id="todo-app" class="mt-4">
         <h2>Todo App (Admin)</h2>
@@ -55,7 +54,7 @@
             placeholder="Enter a new task"
           />
           <button id="add-todo-admin" class="btn btn-primary" type="button">
-            Add
+            Görev ekle
           </button>
         </div>
         <ul id="todo-list-admin" class="list-group">
@@ -68,58 +67,33 @@
       </button>
     </div>
 
-    <!-- Sidebar for task details -->
-    <div id="task-sidebar" class="task-sidebar">
-      <div class="sidebar-header">
-        <h3 id="task-title">Task Title</h3>
-        <button id="close-sidebar" class="btn-close"></button>
-      </div>
-      <div class="sidebar-content">
-        <p><strong>Reminder:</strong> <span id="task-reminder">None</span></p>
-        <p><strong>Due Date:</strong> <span id="task-due-date">None</span></p>
-        <p>
-          <strong>Recurring:</strong> <span id="task-recurring-side">No</span>
-        </p>
-        <p>
-          <strong>Assigned To:</strong> <span id="task-assigned">None</span>
-        </p>
-        <p><strong>Notes:</strong></p>
-        <textarea
-          id="task-notes"
-          class="form-control"
-          rows="4"
-          readonly
-        ></textarea>
-      </div>
-    </div>
-
     <div id="add-task-sidebar" class="add-task-sidebar">
       <div
         class="sidebar-header d-flex justify-content-between align-items-center"
       >
-        <h2>Add New Task</h2>
+        <h2>Yeni Görev Ekle</h2>
         <button id="close-add-task-sidebar" class="btn-close"></button>
       </div>
       <form id="task-form" class="p-3">
         <div class="mb-3">
-          <label for="task-name" class="form-label">Task Name</label>
+          <label for="task-name" class="form-label">Görev ne olsun?</label>
           <input
             type="text"
             id="task-name"
             class="form-control"
-            placeholder="Enter task name"
+            placeholder="Görev ekleyin"
             required
           />
         </div>
         <div class="mb-3">
-          <label for="task-type" class="form-label">Task Type</label>
+          <label for="task-type" class="form-label">Aciliyet var mı?</label>
           <select id="task-type" class="form-select">
-            <option value="1">Urgent</option>
+            <option value="1">Acil</option>
             <option value="2" selected>Normal</option>
           </select>
         </div>
         <div class="mb-3">
-          <label for="task-deadline" class="form-label">Deadline</label>
+          <label for="task-deadline" class="form-label">Son tarih nedir</label>
           <input
             type="datetime-local"
             id="task-deadline"
@@ -127,42 +101,48 @@
           />
         </div>
         <div class="mb-3">
-          <label for="task-recurring" class="form-label">Is Recurring?</label>
+          <label for="task-recurring" class="form-label"
+            >Tekrar etsin mi?</label
+          >
           <select id="task-recurring" class="form-select">
-            <option value="1">Yes</option>
-            <option value="0" selected>No</option>
+            <option value="1">Evet</option>
+            <option value="0" selected>Hayır</option>
           </select>
         </div>
         <div class="mb-3">
           <label for="task-interval" class="form-label"
-            >Interval (in days)</label
+            >Nasıl tekrar etsin?</label
           >
           <select id="task-interval" class="form-select">
-            <option value="" disabled selected>Select interval</option>
-            <option value="daily">Daily</option>
+            <option value="" disabled selected>Seçiniz</option>
+            <option value="daily">Günlük</option>
             <option value="working-days">
-              Working days (all days except Sunday)
+              Çalışma günleri (Pazartesi-Cumartesi)
             </option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-            <option value="custom">Custom...</option>
+            <option value="weekly">Haftalık</option>
+            <option value="monthly">Aylık</option>
+            <option value="yearly">Yıllık</option>
+            <option value="custom">Özel...</option>
           </select>
         </div>
         <div class="mb-3">
-          <label for="task-details" class="form-label">Details</label>
+          <label for="task-details" class="form-label"
+            >Not eklemek ister misin?</label
+          >
           <textarea
             id="task-details"
             class="form-control"
             rows="3"
-            placeholder="Enter task details"
+            placeholder="Not ekleyin"
           ></textarea>
         </div>
         <div class="mb-3">
-          <label for="task-assignee" class="form-label">Assign To</label>
+          <label for="task-assignee" class="form-label"
+            >Görev kime atanacak?</label
+          >
           <select id="task-assignee" class="form-select"></select>
         </div>
-        <button type="submit" class="btn btn-primary">Add Task</button>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
       </form>
     </div>
 
@@ -170,7 +150,7 @@
       <div
         class="sidebar-header d-flex justify-content-between align-items-center"
       >
-        <h2>Edit Task</h2>
+        <h2>Görev Detayları</h2>
         <button id="close-edit-task-sidebar" class="btn-close"></button>
       </div>
       <div id="edit-task-fields" class="p-3">
@@ -203,7 +183,7 @@
         "
       >
         <label
-          >Repeat every
+          >Tekrar et her
           <input
             type="number"
             id="custom-interval-number"
@@ -217,19 +197,19 @@
           class="form-select"
           style="display: inline-block; width: auto"
         >
-          <option value="day">day(s)</option>
-          <option value="week">week(s)</option>
-          <option value="month">month(s)</option>
-          <option value="year">year(s)</option>
+          <option value="day">gün</option>
+          <option value="week">hafta</option>
+          <option value="month">ay</option>
+          <option value="year">yıl</option>
         </select>
         <button id="custom-interval-ok" class="btn btn-primary btn-sm ms-2">
-          OK
+          Tamam
         </button>
         <button
           id="custom-interval-cancel"
           class="btn btn-secondary btn-sm ms-2"
         >
-          Cancel
+          İptal
         </button>
       </div>
     </div>

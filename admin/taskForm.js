@@ -72,7 +72,7 @@ export function setupTaskForm(
       const num = parseInt(customIntervalNumber.value, 10);
       const unit = customIntervalUnit.value;
       if (isNaN(num) || num < 1) {
-        alert("Please enter a valid number.");
+        alert("0'dan büyük bir sayı girin.");
         return;
       }
       customIntervalValue = { num, unit };
@@ -97,7 +97,7 @@ export function setupTaskForm(
     const creatorId = window.currentUserId;
     const userIdValue = assigneeSelect.value;
     if (!userIdValue) {
-      alert("Please select a user to assign the task.");
+      alert("Görev atamak için bir kullanıcı seçin.");
       return;
     }
 

@@ -3,11 +3,31 @@ import { openEditSidebar } from "./sidebar.js";
 import { updateTask } from "./api.js"; // Add this import
 import { createNextRecurringTask } from "./taskUtils.js";
 
+// Add this helper to decode interval from DB (e.g. "21" means 2 weeks, "13" means 1 month)
+function decodeInterval(dbInterval) {
+  if (!dbInterval || typeof dbInterval !== "string" || dbInterval.length !== 2)
+    return { amount: null, unit: null };
+  const amount = parseInt(dbInterval[0], 10);
+  const type = dbInterval[1];
+  // Map DB type digit to unit string
+  const unitMap = {
+    1: "day",
+    3: "week",
+    4: "month",
+    5: "year",
+    6: "workday",
+  };
+  return { amount, unit: unitMap[type] || null };
+}
+
+// When processing tasks from DB, decode interval
 export function renderTaskList(tasks, loadTasksFromDatabase) {
   todoList.innerHTML = "";
 
   // Show tasks that are not completed, or completed but deadline is today
   const visibleTasks = tasks.filter((task) => {
+    console.log(task.isDeleted);
+    if (task.isDeleted) return false; // Skip deleted tasks
     if (!task.Tick) return true;
     if (!task.Deadline) return false;
     const deadline = new Date(task.Deadline);
@@ -22,11 +42,25 @@ export function renderTaskList(tasks, loadTasksFromDatabase) {
   if (visibleTasks.length === 0) {
     const noTasksMessage = document.createElement("li");
     noTasksMessage.className = "list-group-item text-center text-muted";
-    noTasksMessage.textContent = "No tasks available.";
+    noTasksMessage.textContent = "Yeni görev ekleyin!";
     todoList.appendChild(noTasksMessage);
     return;
   }
   visibleTasks.forEach((task) => {
+    // --- decode interval from DB ---
+    if (
+      task.Interval &&
+      typeof task.Interval === "string" &&
+      task.Interval.length === 2
+    ) {
+      const { amount, unit } = decodeInterval(task.Interval);
+      task.IntervalAmount = amount;
+      task.IntervalUnit = unit;
+    } else {
+      task.IntervalAmount = null;
+      task.IntervalUnit = null;
+    }
+
     const listItem = document.createElement("li");
     listItem.className =
       "list-group-item d-flex align-items-stretch task-fade-in";
@@ -91,12 +125,28 @@ export function renderTaskList(tasks, loadTasksFromDatabase) {
     const leftDetails = document.createElement("div");
     leftDetails.style.display = "flex";
     leftDetails.style.gap = "16px";
+
+    // Example usage:
+    const intervalDisplay =
+      task.IsRecurring && task.IntervalAmount && task.IntervalUnit
+        ? `${task.IntervalAmount} ${
+            {
+              day: "gün",
+              week: "hafta",
+              month: "ay",
+              year: "yıl",
+              workday: "iş günü",
+              custom: "özel",
+            }[task.IntervalUnit] || ""
+          }`
+        : "";
+
+    // You can add this to your leftDetails or wherever you want to show the interval:
     leftDetails.innerHTML = `
   <span><strong>${task.UserName || "Assignee"}</strong></span>
-  <span>${
-    task.Deadline ? new Date(task.Deadline).toLocaleString() : "None"
-  }</span>
+  <span>${formatDeadline(task.Deadline)}</span>
   <span>${task.IsRecurring ? "🔁" : ""}</span>
+  ${intervalDisplay ? `<span>${intervalDisplay}</span>` : ""}
 `;
 
     // Right group: type, creator
@@ -105,7 +155,7 @@ export function renderTaskList(tasks, loadTasksFromDatabase) {
     rightDetails.style.gap = "12px";
     rightDetails.innerHTML = `
     <span${task.TaskType === 1 ? ' class="urgent-text"' : ""}>${
-      task.TaskType === 1 ? "Urgent" : "Normal"
+      task.TaskType === 1 ? "Acil" : ""
     }</span>
     <span>${task.CreatorName}</span>
   `;
@@ -156,4 +206,20 @@ export function renderTaskList(tasks, loadTasksFromDatabase) {
       openEditSidebar(task, loadTasksFromDatabase);
     });
   });
+}
+
+// Format deadline as "19 May Mon" or "19 May 2024 Mon"
+function formatDeadline(dateStr) {
+  if (!dateStr) return "None";
+  const date = new Date(dateStr);
+  const now = new Date();
+  const day = date.getDate();
+  const month = date.toLocaleString("tr-TR", { month: "short" }); // Turkish month
+  const year = date.getFullYear();
+  const weekday = date.toLocaleString("tr-TR", { weekday: "short" }); // Turkish weekday
+  if (year === now.getFullYear()) {
+    return `${day} ${month} ${weekday}`;
+  } else {
+    return `${day} ${month} ${year} ${weekday}`;
+  }
 }

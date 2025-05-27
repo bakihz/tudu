@@ -43,3 +43,11 @@ if (goToUserButton) {
     window.location.href = "user.html";
   });
 }
+
+const logoutLink = document.getElementById("logout-link");
+if (logoutLink) {
+  logoutLink.addEventListener("click", () => {
+    // Optionally clear any session or token here
+    window.location.href = "login.html"; // Redirect to login
+  });
+}

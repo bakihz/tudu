@@ -60,16 +60,19 @@ ipcMain.handle("update-task", async (event, task) => {
       )
       .input("TaskType", sql.Int, task.TaskType)
       .input("IsRecurring", sql.Bit, task.IsRecurring)
-      .input("UserID", sql.Int, task.UserID) // Add this line if needed
-      .input("Tick", sql.Bit, task.Tick) // Add this line if needed
-      .query(`
-        UPDATE Tasks SET
-          TaskName = @TaskName,
-          Details = @Details,
-          Deadline = @Deadline,
-          TaskType = @TaskType,
-          IsRecurring = @IsRecurring,
-          Tick = @Tick
+      .input("UserID", sql.Int, task.UserID)
+      .input("Tick", sql.Bit, task.Tick)
+      .input("Interval", sql.Int, task.Interval) // <-- ADD THIS LINE
+      .input("isDeleted", sql.Bit, task.isDeleted).query(`
+        UPDATE Tasks
+        SET TaskName = @TaskName,
+            Details = @Details,
+            Deadline = @Deadline,
+            TaskType = @TaskType,
+            IsRecurring = @IsRecurring,
+            Tick = @Tick,
+            Interval = @Interval,
+            isDeleted = @isDeleted
         WHERE TaskID = @TaskID
       `);
     const result = await pool.request().query(`
@@ -101,11 +104,12 @@ ipcMain.handle("add-task", async (event, task) => {
       .input("TaskType", sql.Int, task.TaskType)
       .input("IsRecurring", sql.Bit, task.IsRecurring)
       .input("Tick", sql.Bit, task.Tick)
-      .input("CreatorID", sql.Int, task.CreatorID) // <-- Make sure this is set!
-      .input("UserID", sql.Int, task.UserID) // <-- Make sure this is set!
+      .input("CreatorID", sql.Int, task.CreatorID)
+      .input("UserID", sql.Int, task.UserID)
+      .input("Interval", sql.Int, task.Interval) // <-- ADD THIS LINE
       .query(`
-        INSERT INTO Tasks (TaskName, Details, Deadline, TaskType, IsRecurring, CreatorID, Tick, UserID)
-        VALUES (@TaskName, @Details, @Deadline, @TaskType, @IsRecurring, @CreatorID, @Tick, @UserID)
+        INSERT INTO Tasks (TaskName, Details, Deadline, TaskType, IsRecurring, CreatorID, Tick, UserID, Interval)
+        VALUES (@TaskName, @Details, @Deadline, @TaskType, @IsRecurring, @CreatorID, @Tick, @UserID, @Interval)
       `);
     return { success: true };
   } catch (err) {
@@ -131,9 +135,12 @@ ipcMain.handle("get-tasks", async () => {
     t.UserID,
     t.CreatorID,
     t.Details,
-    u.UserName AS CreatorName
+    t.isDeleted,
+    creator.UserName AS CreatorName,
+    assignee.UserName AS UserName
   FROM Tasks t
-  LEFT JOIN Users u ON t.CreatorID = u.UserID
+  LEFT JOIN Users creator ON t.CreatorID = creator.UserID
+  LEFT JOIN Users assignee ON t.UserID = assignee.UserID
 `);
     // Return the tasks with the creator's name
     return result.recordset;
