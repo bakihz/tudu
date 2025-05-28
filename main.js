@@ -48,6 +48,7 @@ app.on("activate", () => {
 ipcMain.handle("update-task", async (event, task) => {
   try {
     const pool = await poolPromise;
+    console.log("Updating task:", task); // Log the task being updated
     await pool
       .request()
       .input("TaskID", sql.Int, task.TaskID)
@@ -63,6 +64,11 @@ ipcMain.handle("update-task", async (event, task) => {
       .input("UserID", sql.Int, task.UserID)
       .input("Tick", sql.Bit, task.Tick)
       .input("Interval", sql.Int, task.Interval) // <-- ADD THIS LINE
+      .input(
+        "CompletionTime",
+        sql.DateTime,
+        task.CompletionTime ? new Date(task.CompletionTime) : null
+      )
       .input("isDeleted", sql.Bit, task.isDeleted).query(`
         UPDATE Tasks
         SET TaskName = @TaskName,
@@ -72,6 +78,7 @@ ipcMain.handle("update-task", async (event, task) => {
             IsRecurring = @IsRecurring,
             Tick = @Tick,
             Interval = @Interval,
+            CompletionTime = @CompletionTime,
             isDeleted = @isDeleted
         WHERE TaskID = @TaskID
       `);
@@ -82,6 +89,7 @@ ipcMain.handle("update-task", async (event, task) => {
       FROM Tasks t
       LEFT JOIN Users u ON t.CreatorID = u.UserID
     `);
+    console.log("Task updated successfully:", result.recordset);
     return { success: true, result: result.recordset };
   } catch (err) {
     console.error("Error updating task:", err);

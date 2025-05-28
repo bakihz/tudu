@@ -37,13 +37,6 @@ if (closeEditTaskBtn && editTaskSidebar) {
   });
 }
 
-// Navigation handler
-if (goToUserButton) {
-  goToUserButton.addEventListener("click", () => {
-    window.location.href = "user.html";
-  });
-}
-
 const logoutLink = document.getElementById("logout-link");
 if (logoutLink) {
   logoutLink.addEventListener("click", () => {
@@ -52,31 +45,30 @@ if (logoutLink) {
   });
 }
 
-const newTodoInput = document.getElementById("new-todo-admin");
-const addTodoButton = document.getElementById("add-todo-admin");
+const newUserTodoInput = document.getElementById("new-todo-user");
+const addUserTodoButton = document.getElementById("add-todo-user");
 
-function addTodo() {
-  const text = newTodoInput.value.trim();
+function addUserTodo() {
+  const text = newUserTodoInput.value.trim();
   if (!text) return;
 
-  // Open sidebar
   addTaskSidebar.classList.add("open");
 
-  // If you have a text field for "task-name" in the addTask form:
+  // Put the text in the task form
   const taskNameInput = document.getElementById("task-name");
   if (taskNameInput) {
     taskNameInput.value = text;
   }
 
-  newTodoInput.value = "";
+  newUserTodoInput.value = "";
 }
 
-// Trigger on Enter press
-newTodoInput.addEventListener("keydown", (e) => {
+// Open sidebar on Enter
+newUserTodoInput?.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    addTodo();
+    addUserTodo();
   }
 });
 
-// Trigger on button click
-addTodoButton.addEventListener("click", addTodo);
+// Open sidebar on button click
+addUserTodoButton?.addEventListener("click", addUserTodo);

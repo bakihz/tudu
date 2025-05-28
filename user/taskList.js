@@ -24,10 +24,13 @@ function decodeInterval(dbInterval) {
 export function renderTaskList(tasks, loadTasksFromDatabase) {
   todoList.innerHTML = "";
 
-  // Show tasks that are not completed, or completed but deadline is today
+  // Only show tasks assigned to the logged-in user
+  const currentUserId = window.currentUserId; // Make sure you define this somewhere (e.g., in your login logic)
+  
+  // Filter out tasks that are not assigned to the current user, are deleted, or other checks
   const visibleTasks = tasks.filter((task) => {
-    console.log(task.isDeleted);
-    if (task.isDeleted) return false; // Skip deleted tasks
+    if (task.UserID !== currentUserId) return false;  // <-- Hide tasks that belong to someone else
+    if (task.isDeleted) return false;
     if (!task.Tick) return true;
     if (!task.Deadline) return false;
     const deadline = new Date(task.Deadline);
@@ -174,32 +177,38 @@ export function renderTaskList(tasks, loadTasksFromDatabase) {
       e.stopPropagation();
       const newTick = !task.Tick;
 
-      // If the task is becoming complete, store current time +3 hours as CompletionTime
+      // If the task is now completed, set CompletionTime to "now" +3 hours
       let completionTime = null;
       if (newTick) {
         const nowPlus3 = new Date();
         nowPlus3.setHours(nowPlus3.getHours() + 3);
-        completionTime = nowPlus3.toISOString(); // e.g., "2025-05-28T12:34:56.789Z"
+        completionTime = nowPlus3.toISOString();
+        console.log("Completion time set to:", completionTime);
       }
 
       await updateTask({
         ...task,
         Tick: newTick,
-        CompletionTime: completionTime, // Pass it to your DB
+        CompletionTime: completionTime,
       });
 
       checkCircle.innerHTML = newTick ? "&#10003;" : "";
       task.Tick = newTick;
 
-      // Toggle line-through, animate, etc.
+      // Animate completion
       taskName.classList.toggle("task-completed", newTick);
       if (newTick) {
         listItem.classList.add("task-completed-animate");
-        setTimeout(() => listItem.classList.remove("task-completed-animate"), 400);
+        setTimeout(
+          () => listItem.classList.remove("task-completed-animate"),
+          400
+        );
       }
+
+      // Add or remove line-through on task name
       taskName.style.textDecoration = newTick ? "line-through" : "none";
 
-      // Delay reload
+      // Delay before refreshing the list
       setTimeout(async () => {
         if (newTick && task.IsRecurring && task.Interval && task.Deadline) {
           await createNextRecurringTask(task);
