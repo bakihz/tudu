@@ -30,9 +30,9 @@ document
         localStorage.setItem("currentUserId", result.userId);
         // Redirect based on user type
         if (result.userType === "admin") {
-          window.location.href = "admin.html";
+          window.location.href = "../admin/index.html";
         } else if (result.userType === "user") {
-          window.location.href = "user.html";
+          window.location.href = "../user/index.html";
         }
       } else {
         alert(

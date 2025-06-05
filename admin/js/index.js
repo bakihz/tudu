@@ -11,10 +11,11 @@ import {
 import { getTasks } from "./api.js";
 import { renderTaskList } from "./taskList.js";
 import { setupTaskForm } from "./taskForm.js";
+let showCompletedOnly = false;
 async function loadTasksFromDatabase() {
   console.log("Loading tasks from database...");
   const tasks = await getTasks();
-  renderTaskList(tasks, loadTasksFromDatabase);
+  renderTaskList(tasks, loadTasksFromDatabase, showCompletedOnly);
 }
 
 setupTaskForm(taskForm, loadTasksFromDatabase, addTaskSidebar, assigneeSelect);
@@ -80,3 +81,21 @@ newTodoInput.addEventListener("keydown", (e) => {
 
 // Trigger on button click
 addTodoButton.addEventListener("click", addTodo);
+
+// User filter handler
+const userFilter = document.getElementById("user-filter");
+if (userFilter) {
+  userFilter.addEventListener("change", () => {
+    loadTasksFromDatabase();
+  });
+}
+
+const showCompletedBtn = document.getElementById("show-completed-btn");
+if (showCompletedBtn) {
+  showCompletedBtn.addEventListener("click", () => {
+    showCompletedOnly = !showCompletedOnly;
+    showCompletedBtn.classList.toggle("active", showCompletedOnly);
+    showCompletedBtn.textContent = showCompletedOnly ? "Aktif Görevler" : "Tamamlanmış Görevler";
+    loadTasksFromDatabase();
+  });
+}

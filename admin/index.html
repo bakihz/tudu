@@ -17,7 +17,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="admin.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
     <!-- Side Navigation -->
@@ -34,11 +34,15 @@
       "
     >
       <h4 class="mb-4">Menu</h4>
-      <a href="admin.html" class="nav-link mb-2">Dashboard</a>
-      <a href="users.html" class="nav-link mb-2">Users</a>
+      <a href="admin.html" class="nav-link mb-2">Görevler</a>
+      <a href="users.html" id="completedTaskNav" class="nav-link mb-2"
+        >Tamamlanmış görevler</a
+      >
       <a href="tasks.html" class="nav-link mb-2">Tasks</a>
       <a href="settings.html" class="nav-link mb-2">Settings</a>
-      <a href="#" id="logout-link" class="nav-link text-danger mt-auto">Logout</a>
+      <a href="#" id="logout-link" class="nav-link text-danger mt-auto"
+        >Logout</a
+      >
     </nav>
 
     <div class="main-content">
@@ -57,14 +61,29 @@
             Görev ekle
           </button>
         </div>
+        <div class="mb-3" id="user-filter-container">
+          <label for="user-filter" class="form-label"
+            >Kullanıcıya göre filtrele:</label
+          >
+          <select id="user-filter" class="form-select" style="max-width: 300px">
+            <option value="all">Tümü</option>
+            <!-- User options will be populated dynamically -->
+          </select>
+          <!-- Place this near your user filter select -->
+          <button
+            id="show-completed-btn"
+            class="btn btn-outline-secondary ms-2"
+            type="button"
+          >
+            Tamamlanmış Görevler
+          </button>
+        </div>
         <ul id="todo-list-admin" class="list-group">
           <!-- Placeholder task removed -->
         </ul>
       </div>
 
-      <button id="go-to-user" class="btn btn-primary mt-3">
-        Go to User Page
-      </button>
+      <!-- Place this above your task list in admin.html -->
     </div>
 
     <div id="add-task-sidebar" class="add-task-sidebar">
@@ -214,6 +233,6 @@
       </div>
     </div>
 
-    <script type="module" src="admin/index.js"></script>
+    <script type="module" src="./js/index.js"></script>
   </body>
 </html>

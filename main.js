@@ -1,32 +1,30 @@
-const { BrowserWindow, app, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
-const { poolPromise, sql } = require("./db");
+const { poolPromise, sql } = require("./server/js/db"); // <-- fixed path
 
 let win;
 
+// --- App Lifecycle ---
 app.on("ready", () => {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    fullscreen: false, // Not fullscreen
+    fullscreen: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"), // Ensure the correct path to preload.js
-      contextIsolation: true, // Enable context isolation
-      nodeIntegration: false, // Disable nodeIntegration for security
-      enableRemoteModule: false, // Disable remote module
-      sandbox: false, // Allow Node.js modules in preload
+      preload: path.join(__dirname, "preload.js"),
+      contextIsolation: true,
+      nodeIntegration: false,
+      enableRemoteModule: false,
+      sandbox: false,
     },
   });
 
-  win.maximize(); // <-- This will maximize the window
-
-  win.loadFile("login.html");
+  win.maximize();
+  win.loadFile("./login/login.html");
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  if (process.platform !== "darwin") app.quit();
 });
 
 app.on("activate", () => {
@@ -40,60 +38,40 @@ app.on("activate", () => {
         nodeIntegration: false,
       },
     });
-
-    win.loadFile("login.html");
+    win.loadFile("/login/login.html");
   }
 });
 
-ipcMain.handle("update-task", async (event, task) => {
+// --- IPC Handlers ---
+
+ipcMain.handle("get-tasks", async () => {
   try {
     const pool = await poolPromise;
-    console.log("Updating task:", task); // Log the task being updated
-    await pool
-      .request()
-      .input("TaskID", sql.Int, task.TaskID)
-      .input("TaskName", sql.NVarChar, task.TaskName)
-      .input("Details", sql.NVarChar, task.Details)
-      .input(
-        "Deadline",
-        sql.DateTime,
-        task.Deadline ? new Date(task.Deadline) : null
-      )
-      .input("TaskType", sql.Int, task.TaskType)
-      .input("IsRecurring", sql.Bit, task.IsRecurring)
-      .input("UserID", sql.Int, task.UserID)
-      .input("Tick", sql.Bit, task.Tick)
-      .input("Interval", sql.Int, task.Interval) // <-- ADD THIS LINE
-      .input(
-        "CompletionTime",
-        sql.DateTime,
-        task.CompletionTime ? new Date(task.CompletionTime) : null
-      )
-      .input("isDeleted", sql.Bit, task.isDeleted).query(`
-        UPDATE Tasks
-        SET TaskName = @TaskName,
-            Details = @Details,
-            Deadline = @Deadline,
-            TaskType = @TaskType,
-            IsRecurring = @IsRecurring,
-            Tick = @Tick,
-            Interval = @Interval,
-            CompletionTime = @CompletionTime,
-            isDeleted = @isDeleted
-        WHERE TaskID = @TaskID
-      `);
     const result = await pool.request().query(`
-      SELECT 
-        t.*, 
-        u.UserName AS CreatorName
+      SELECT
+        t.TaskID,
+        t.Tick,
+        t.TaskName,
+        t.CompletionTime,
+        t.TaskType,
+        t.TaskCreationDate,
+        t.Deadline,
+        t.Interval,
+        t.IsRecurring,
+        t.UserID,
+        t.CreatorID,
+        t.Details,
+        t.isDeleted,
+        creator.UserName AS CreatorName,
+        assignee.UserName AS UserName
       FROM Tasks t
-      LEFT JOIN Users u ON t.CreatorID = u.UserID
+      LEFT JOIN Users creator ON t.CreatorID = creator.UserID
+      LEFT JOIN Users assignee ON t.UserID = assignee.UserID
     `);
-    console.log("Task updated successfully:", result.recordset);
-    return { success: true, result: result.recordset };
+    return result.recordset;
   } catch (err) {
-    console.error("Error updating task:", err);
-    return { success: false, error: err.message };
+    console.error("Error loading tasks:", err);
+    return [];
   }
 });
 
@@ -114,8 +92,7 @@ ipcMain.handle("add-task", async (event, task) => {
       .input("Tick", sql.Bit, task.Tick)
       .input("CreatorID", sql.Int, task.CreatorID)
       .input("UserID", sql.Int, task.UserID)
-      .input("Interval", sql.Int, task.Interval) // <-- ADD THIS LINE
-      .query(`
+      .input("Interval", sql.Int, task.Interval).query(`
         INSERT INTO Tasks (TaskName, Details, Deadline, TaskType, IsRecurring, CreatorID, Tick, UserID, Interval)
         VALUES (@TaskName, @Details, @Deadline, @TaskType, @IsRecurring, @CreatorID, @Tick, @UserID, @Interval)
       `);
@@ -126,35 +103,55 @@ ipcMain.handle("add-task", async (event, task) => {
   }
 });
 
-ipcMain.handle("get-tasks", async () => {
+ipcMain.handle("update-task", async (event, task) => {
   try {
     const pool = await poolPromise;
+    await pool
+      .request()
+      .input("TaskID", sql.Int, task.TaskID)
+      .input("TaskName", sql.NVarChar, task.TaskName)
+      .input("Details", sql.NVarChar, task.Details)
+      .input(
+        "Deadline",
+        sql.DateTime,
+        task.Deadline ? new Date(task.Deadline) : null
+      )
+      .input("TaskType", sql.Int, task.TaskType)
+      .input("IsRecurring", sql.Bit, task.IsRecurring)
+      .input("UserID", sql.Int, task.UserID)
+      .input("Tick", sql.Bit, task.Tick)
+      .input("Interval", sql.Int, task.Interval)
+      .input(
+        "CompletionTime",
+        sql.DateTime,
+        task.CompletionTime ? new Date(task.CompletionTime) : null
+      )
+      .input("isDeleted", sql.Bit, task.isDeleted).query(`
+        UPDATE Tasks
+        SET TaskName = @TaskName,
+            Details = @Details,
+            Deadline = @Deadline,
+            TaskType = @TaskType,
+            IsRecurring = @IsRecurring,
+            Tick = @Tick,
+            Interval = @Interval,
+            CompletionTime = @CompletionTime,
+            isDeleted = @isDeleted
+        WHERE TaskID = @TaskID
+      `);
+    // Optionally return updated tasks
     const result = await pool.request().query(`
-  SELECT
-    t.TaskID,
-    t.Tick,
-    t.TaskName,
-    t.CompletionTime,
-    t.TaskType,
-    t.TaskCreationDate,
-    t.Deadline,
-    t.Interval,
-    t.IsRecurring,
-    t.UserID,
-    t.CreatorID,
-    t.Details,
-    t.isDeleted,
-    creator.UserName AS CreatorName,
-    assignee.UserName AS UserName
-  FROM Tasks t
-  LEFT JOIN Users creator ON t.CreatorID = creator.UserID
-  LEFT JOIN Users assignee ON t.UserID = assignee.UserID
-`);
-    // Return the tasks with the creator's name
-    return result.recordset;
+      SELECT 
+        t.*, 
+        u.UserName AS CreatorName
+      FROM Tasks t
+      LEFT JOIN Users u ON t.CreatorID = u.UserID
+    `);
+    console.log("Task updated successfully:", result.recordset);
+    return { success: true, result: result.recordset };
   } catch (err) {
-    console.error("Error loading tasks:", err);
-    return [];
+    console.error("Error updating task:", err);
+    return { success: false, error: err.message };
   }
 });
 
