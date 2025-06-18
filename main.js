@@ -20,7 +20,7 @@ app.on("ready", () => {
   });
 
   win.maximize();
-  win.loadFile("./login/login.html");
+  win.loadFile("./public/login.html");
 });
 
 app.on("window-all-closed", () => {
