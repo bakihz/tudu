@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const { poolPromise, sql } = require("./server/js/db"); // <-- fixed path
+const { startServer } = require("./server.js");
 
 let win;
 
@@ -21,6 +22,7 @@ app.on("ready", () => {
 
   win.maximize();
   win.loadFile("./public/login.html");
+  startServer();
 });
 
 app.on("window-all-closed", () => {
