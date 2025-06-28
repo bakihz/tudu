@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Page</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net;"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../src/styles/Tasks/TasksPage.css" />
+  </head>
+  <body>
+    <!-- Side Navigation -->
+    <nav
+      id="side-nav"
+      class="d-flex flex-column bg-light p-3"
+      style="
+        width: 220px;
+        min-height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        border-right: 1px solid #ddd;
+      "
+    >
+      <h4 class="mb-4">Menu</h4>
+      <a href="../public/finance-overview.html" class="nav-link mb-2">Finans</a>
+      <a href="users.html" id="completedTaskNav" class="nav-link mb-2"
+        >Tamamlanmış görevler</a
+      >
+      <a href="tasks.html" class="nav-link mb-2">Tasks</a>
+      <a href="settings.html" class="nav-link mb-2">Settings</a>
+      <a href="#" id="logout-link" class="nav-link text-danger mt-auto"
+        >Logout</a
+      >
+    </nav>
+
+    <div class="main-content">
+      <h1 class="text-center">Tudu</h1>
+
+      <div id="todo-app" class="mt-4">
+        <!-- <h2>GÖREVVER</h2> -->
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            id="new-todo-admin"
+            class="form-control"
+            placeholder="Enter a new task"
+          />
+          <button id="add-todo-admin" class="btn btn-primary" type="button">
+            Görev ekle
+          </button>
+        </div>
+        <div
+          class="mb-3 d-flex align-items-center gap-2"
+          id="user-filter-container"
+        >
+          <!-- <label for="task-priority-filter" class="form-label"
+              >Önceliğe göre filtrele:</label
+            >
+            <select
+              id="task-priority-filter"
+              class="form-select"
+              style="max-width: 200px; display: inline-block"
+            >
+              <option value="all">Tümü</option>
+              <option value="urgent">Acil</option>
+              <option value="normal">Normal</option>
+            </select> -->
+          <label for="user-filter" class="form-label"
+            >Kullanıcıya göre filtrele:</label
+          >
+          <select id="user-filter" class="form-select" style="max-width: 300px">
+            <option value="all">Tümü</option>
+            <!-- User options will be populated dynamically -->
+          </select>
+
+          <!-- Place this near your user filter select -->
+          <button
+            id="toggle-completed-btn"
+            class="btn btn-outline-secondary ms-2"
+            type="button"
+          >
+            Tamamlanmış Görevler
+          </button>
+        </div>
+        <ul id="todo-list-admin" class="list-group">
+          <!-- Placeholder task removed -->
+        </ul>
+      </div>
+
+      <!-- Place this above your task list in admin.html -->
+    </div>
+
+    <div id="add-task-sidebar" class="add-task-sidebar">
+      <div
+        class="sidebar-header d-flex justify-content-between align-items-center"
+      >
+        <h2>Yeni Görev Ekle</h2>
+        <button id="close-add-task-sidebar" class="btn-close"></button>
+      </div>
+      <form id="task-form" class="p-3">
+        <div class="mb-3">
+          <label for="task-name" class="form-label">Görev ne olsun?</label>
+          <input
+            type="text"
+            id="task-name"
+            class="form-control"
+            placeholder="Görev ekleyin"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label for="task-type" class="form-label">Aciliyet var mı?</label>
+          <select id="task-type" class="form-select">
+            <option value="1">Acil</option>
+            <option value="2" selected>Normal</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="task-deadline" class="form-label">Son tarih nedir</label>
+          <input
+            type="datetime-local"
+            id="task-deadline"
+            class="form-control"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="task-recurring" class="form-label"
+            >Tekrar etsin mi?</label
+          >
+          <select id="task-recurring" class="form-select">
+            <option value="1">Evet</option>
+            <option value="0" selected>Hayır</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="task-interval" class="form-label"
+            >Nasıl tekrar etsin?</label
+          >
+          <select id="task-interval" class="form-select">
+            <option value="" disabled selected>Seçiniz</option>
+            <option value="daily">Günlük</option>
+            <option value="working-days">
+              Çalışma günleri (Pazartesi-Cumartesi)
+            </option>
+            <option value="weekly">Haftalık</option>
+            <option value="monthly">Aylık</option>
+            <option value="yearly">Yıllık</option>
+            <option value="custom">Özel...</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="task-details" class="form-label"
+            >Not eklemek ister misin?</label
+          >
+          <textarea
+            id="task-details"
+            class="form-control"
+            rows="3"
+            placeholder="Not ekleyin"
+          ></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="task-assignee" class="form-label"
+            >Görev kime atanacak?</label
+          >
+          <select id="task-assignee" class="form-select"></select>
+        </div>
+        <button type="submit" class="btn btn-primary">Kaydet</button>
+      </form>
+    </div>
+
+    <div id="edit-task-sidebar" class="edit-task-sidebar">
+      <div
+        class="sidebar-header d-flex justify-content-between align-items-center"
+      >
+        <h2>Görev Detayları</h2>
+        <button id="close-edit-task-sidebar" class="btn-close"></button>
+      </div>
+      <div id="edit-task-fields" class="p-3">
+        <!-- Fields will be injected by JS -->
+      </div>
+    </div>
+
+    <div
+      id="custom-interval-modal"
+      class="modal"
+      style="
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.3);
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          padding: 2rem;
+          border-radius: 8px;
+          min-width: 300px;
+        "
+      >
+        <label
+          >Tekrar et her
+          <input
+            type="number"
+            id="custom-interval-number"
+            min="1"
+            value="1"
+            style="width: 60px"
+          />
+        </label>
+        <select
+          id="custom-interval-unit"
+          class="form-select"
+          style="display: inline-block; width: auto"
+        >
+          <option value="day">gün</option>
+          <option value="week">hafta</option>
+          <option value="month">ay</option>
+          <option value="year">yıl</option>
+        </select>
+        <button id="custom-interval-ok" class="btn btn-primary btn-sm ms-2">
+          Tamam
+        </button>
+        <button
+          id="custom-interval-cancel"
+          class="btn btn-secondary btn-sm ms-2"
+        >
+          İptal
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="../src/components/Tasks/index.js"></script>
+  </body>
+</html>

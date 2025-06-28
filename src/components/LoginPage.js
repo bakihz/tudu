@@ -28,12 +28,12 @@ document
       if (response.ok) {
         window.currentUserId = result.userId;
         localStorage.setItem("currentUserId", result.userId);
-        // Redirect based on user type
-        if (result.userType === "admin") {
-          window.location.href = "../admin/index.html";
-        } else if (result.userType === "user") {
-          window.location.href = "../user/index.html";
-        }
+        window.currentUserType = result.userType;
+        localStorage.setItem("userType", result.userType);
+        window.currentUserName = result.userName || "Siz";
+        console.log("User Name:", window.currentUserName);
+        localStorage.setItem("userName", window.currentUserName);
+        window.location.href = "./tasks.html";
       } else {
         alert(
           result.message || "Invalid username or password. Please try again."
