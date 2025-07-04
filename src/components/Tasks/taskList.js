@@ -34,10 +34,76 @@ document
     }
   });
 
+let seenTaskIds = new Set();
+
 async function loadTasksFromDatabase() {
-  const tasks = await getTasks(); // or your fetch logic
+  const tasks = await window.api.getTasks();
   renderTaskList(tasks, loadTasksFromDatabase, showCompleted);
+  updateBadgeCount(tasks);
+
+  // --- Notification logic ---
+  const currentUserId = localStorage.getItem("currentUserId");
+  // Only tasks assigned to me, not completed, not deleted, and created by someone else
+  const myTasks = tasks.filter(
+    (task) =>
+      !task.Tick &&
+      !task.isDeleted &&
+      task.UserID &&
+      String(task.UserID) === String(currentUserId) &&
+      String(task.CreatorID) !== String(currentUserId) // Only if created by someone else
+  );
+
+  // Find new tasks assigned to me
+  const newTasks = myTasks.filter((task) => !seenTaskIds.has(task.TaskID));
+  if (newTasks.length > 0 && document.hidden) {
+    // Only notify if app is not focused
+    newTasks.forEach((task) => {
+      if (Notification.permission === "granted") {
+        new Notification("Yeni Görev Atandı", {
+          body: task.TaskName,
+        });
+      }
+    });
+  }
+
+  // Update seen tasks
+  seenTaskIds = new Set(myTasks.map((task) => task.TaskID));
 }
+
+// Request notification permission on load
+if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+// Add a new filter for "Show all tasks I created (including completed)"
+function addCreatorFilter() {
+  const filterContainer =
+    document.getElementById("user-filter-container") ||
+    document.getElementById("user-filter")?.parentElement;
+  if (!filterContainer) return;
+
+  // Create the checkbox
+  const creatorFilter = document.createElement("input");
+  creatorFilter.type = "checkbox";
+  creatorFilter.id = "show-my-created-tasks";
+  creatorFilter.className = "form-check-input ms-2";
+  creatorFilter.style.marginLeft = "10px";
+
+  // Create the label
+  const creatorLabel = document.createElement("label");
+  creatorLabel.htmlFor = "show-my-created-tasks";
+  creatorLabel.textContent = "Oluşturduklarım";
+  creatorLabel.className = "form-check-label ms-1";
+
+  // Insert into the filter container
+  filterContainer.appendChild(creatorFilter);
+  filterContainer.appendChild(creatorLabel);
+
+  creatorFilter.addEventListener("change", () => {
+    loadTasksFromDatabase();
+  });
+}
+addCreatorFilter();
 
 // When processing tasks from DB, decode interval
 export function renderTaskList(
@@ -50,37 +116,32 @@ export function renderTaskList(
   const userFilter = document.getElementById("user-filter");
   let selectedUserId = userFilter ? userFilter.value : "all";
 
+  const showMyCreated = document.getElementById(
+    "show-my-created-tasks"
+  )?.checked;
+  const currentUserId = localStorage.getItem("currentUserId");
+
   const now = new Date();
   now.setHours(0, 0, 0, 0);
 
   // Combine user filter, deleted, and completed/today logic
   const visibleTasks = tasks.filter((task) => {
     // User filter
-    if (selectedUserId !== "all" && String(task.UserID) !== selectedUserId)
-      return false;
+    if (!showMyCreated) {
+      if (selectedUserId !== "all" && String(task.UserID) !== selectedUserId)
+        return false;
+    } else {
+      // Show all tasks created by current user (including completed)
+      if (String(task.CreatorID) !== String(currentUserId)) return false;
+    }
     // Deleted filter
     if (task.isDeleted) return false;
-    // Hide completed tasks unless their deadline is today
+
+    // Completed/active filter
     if (showCompleted) {
-      if (task.Tick) {
-        return true;
-      }
-      // Show all completed tasks
-    } else if (task.Tick) {
-      const deadline = new Date(task.Deadline);
-      if (
-        deadline.getFullYear() !== now.getFullYear() ||
-        deadline.getMonth() !== now.getMonth() ||
-        deadline.getDate() !== now.getDate()
-      ) {
-        return false;
-      }
-    }
-    if (showCompleted) {
-      console.log("showCompleted is true", task.Tick);
-      return !!task.Tick; // Only completed
+      return !!task.Tick;
     } else {
-      return !task.Tick; // Only active
+      return !task.Tick;
     }
   });
   if (visibleTasks.length === 0) {
@@ -129,22 +190,24 @@ export function renderTaskList(
       leftCol.style.width = "60px";
       leftCol.style.minWidth = "60px";
 
+      // --- Fix: Use theme color for checkCircle border and icon ---
       const checkCircle = document.createElement("span");
       checkCircle.className = "check-circle";
       checkCircle.style.cssText = `
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: 2px solid #007bff;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 22px;
-    color: #007bff;
-    transition: background 0.2s;
-    user-select: none;
-  `;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 2px solid #00bfae;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 22px;
+        color: #00bfae;
+        background: transparent;
+        transition: background 0.2s, border-color 0.2s, color 0.2s;
+        user-select: none;
+      `;
       checkCircle.innerHTML = task.Tick ? "&#10003;" : "";
       leftCol.appendChild(checkCircle);
 
@@ -280,7 +343,9 @@ export function renderTaskList(
 
       listItem.addEventListener("click", (e) => {
         if (e.target.classList.contains("check-circle")) return;
-        openEditSidebar(task, loadTasksFromDatabase);
+        const currentUserId = localStorage.getItem("currentUserId");
+        const isCreator = String(task.CreatorID) === String(currentUserId);
+        openEditSidebar(task, loadTasksFromDatabase, { readOnly: !isCreator });
       });
     });
   }
@@ -383,3 +448,54 @@ async function populateUserFilter() {
   }
 }
 populateUserFilter();
+
+function updateBadgeCount(tasks) {
+  const now = new Date();
+  now.setHours(23, 59, 59, 999); // End of today
+
+  const currentUserId = localStorage.getItem("currentUserId");
+  const waitingCount = tasks.filter(
+    (task) =>
+      !task.Tick &&
+      !task.isDeleted &&
+      task.Deadline &&
+      new Date(task.Deadline) <= now &&
+      String(task.UserID) === String(currentUserId) // Only tasks assigned to current user
+  ).length;
+  if (window.api && window.api.sendBadgeCount) {
+    window.api.sendBadgeCount(waitingCount);
+  } else if (window.electronAPI && window.electronAPI.sendBadgeCount) {
+    window.electronAPI.sendBadgeCount(waitingCount);
+  } else if (window.require) {
+    // fallback for nodeIntegration: true (not recommended)
+    const { ipcRenderer } = window.require("electron");
+    ipcRenderer.send("set-badge-count", waitingCount);
+  }
+}
+
+// Call once on load
+loadTasksFromDatabase();
+
+// Then update every 1 minute (60000 ms)
+setInterval(() => {
+  loadTasksFromDatabase();
+}, 60000);
+document.addEventListener("DOMContentLoaded", function () {
+  const deadlineInput = document.getElementById("task-deadline");
+  if (deadlineInput) {
+    const now = new Date();
+    now.setHours(18, 0, 0, 0);
+    const pad = (n) => n.toString().padStart(2, "0");
+    const formatted =
+      now.getFullYear() +
+      "-" +
+      pad(now.getMonth() + 1) +
+      "-" +
+      pad(now.getDate()) +
+      "T" +
+      pad(now.getHours()) +
+      ":" +
+      pad(now.getMinutes());
+    deadlineInput.value = formatted;
+  }
+});

@@ -1,15 +1,27 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  nativeImage,
+  Tray,
+  Menu,
+} = require("electron");
+const { createCanvas } = require("canvas"); // npm install canvas
 const path = require("path");
 const { poolPromise, sql } = require("./server/js/db"); // <-- fixed path
 const { startServer } = require("./server.js");
 
 let win;
+let tray = null;
+let isQuiting = false;
 
 // --- App Lifecycle ---
 app.on("ready", () => {
   win = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: path.join(__dirname, "logo2.png"), // Use your icon file here
+    title: "Tudu",
     fullscreen: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -23,6 +35,42 @@ app.on("ready", () => {
   win.maximize();
   win.loadFile("./public/login.html");
   startServer();
+
+  // Tray setup
+  tray = new Tray(path.join(__dirname, "logo.ico")); // Use your icon file here
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: "Göster",
+      click: () => {
+        win.show();
+      },
+    },
+    {
+      label: "Çıkış",
+      click: () => {
+        isQuiting = true;
+        app.quit();
+      },
+    },
+  ]);
+  tray.setToolTip("Tudu");
+  tray.setContextMenu(contextMenu);
+
+  tray.on("double-click", () => {
+    win.show();
+  });
+
+  win.on("close", (event) => {
+    if (!isQuiting) {
+      event.preventDefault();
+      win.hide();
+    }
+    return false;
+  });
+});
+
+app.on("before-quit", () => {
+  isQuiting = true;
 });
 
 app.on("window-all-closed", () => {
@@ -176,10 +224,36 @@ ipcMain.handle("get-users", async () => {
     const pool = await poolPromise;
     const result = await pool
       .request()
-      .query("SELECT UserID, UserName FROM Users");
+      .query("SELECT UserID, UserName, UserType FROM Users");
     return result.recordset;
   } catch (err) {
     console.error("Error loading users:", err);
     return [];
+  }
+});
+
+ipcMain.on("set-badge-count", (event, count) => {
+  if (process.platform === "darwin" || process.platform === "linux") {
+    app.setBadgeCount(count);
+  } else if (process.platform === "win32") {
+    if (count > 0) {
+      const size = 50;
+      const canvas = createCanvas(size, size);
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, size, size);
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
+      ctx.fillStyle = "#007bff"; // Make it blue
+      ctx.fill();
+      ctx.font = "bold 30px Arial";
+      ctx.fillStyle = "#fff";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(count > 99 ? "99+" : count.toString(), size / 2, size / 2);
+      const overlay = nativeImage.createFromDataURL(canvas.toDataURL());
+      win.setOverlayIcon(overlay, `${count} pending tasks`);
+    } else {
+      win.setOverlayIcon(null, "");
+    }
   }
 });

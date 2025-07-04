@@ -18,12 +18,19 @@ export async function populateAssigneeSelect(assigneeSelect) {
   if (currentUserType !== "admin") {
     // Show only current user
     assigneeSelect.innerHTML = "";
-    const option = document.createElement("option");
-    option.value = currentUserId;
-    option.textContent = currentUserName;
-    option.selected = true;
-    assigneeSelect.appendChild(option);
-    return;
+    const users = await getUsers();
+    users.forEach((user) => {
+      if (user.UserType !== "admin") {
+        const option = document.createElement("option");
+        option.value = user.UserID;
+        option.textContent = user.UserName;
+        // Default to current user
+        if (user.UserID === window.currentUserId) {
+          option.selected = true;
+        }
+        assigneeSelect.appendChild(option);
+      } // Skip other users
+    });
   } else {
     const users = await getUsers();
     assigneeSelect.innerHTML = "";
@@ -183,7 +190,10 @@ export function setupTaskForm(
       Deadline: document.getElementById("task-deadline").value
         ? new Date(document.getElementById("task-deadline").value)
         : null,
-      IsRecurring: document.getElementById("task-recurring").value,
+      IsRecurring: parseInt(
+        document.getElementById("task-recurring").value,
+        10
+      ),
       Interval: intervalValue,
       Details: document.getElementById("task-details").value.trim(),
       CreatorID: creatorId,
@@ -199,3 +209,14 @@ export function setupTaskForm(
     await populateAssigneeSelect(assigneeSelect);
   });
 }
+
+document.getElementById("custom-interval-ok").onclick = function () {
+  const number = document.getElementById("custom-interval-number").value;
+  const unit = document.getElementById("custom-interval-unit").value;
+  // Use these values as needed...
+  document.getElementById("custom-interval-modal").style.display = "none";
+};
+
+document.getElementById("custom-interval-cancel").onclick = function () {
+  document.getElementById("custom-interval-modal").style.display = "none";
+};

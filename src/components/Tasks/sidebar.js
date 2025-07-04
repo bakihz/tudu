@@ -69,7 +69,7 @@ function renderEditableField(label, value, key, type = "text") {
     `;
 }
 
-export function openEditSidebar(task, loadTasksFromDatabase) {
+export function openEditSidebar(task, loadTasksFromDatabase, options = {}) {
   // Decode interval for display
   let intervalDisplay = "";
   let intervalAmount = "";
@@ -110,10 +110,30 @@ export function openEditSidebar(task, loadTasksFromDatabase) {
       <button id="delete-task-btn" class="btn btn-danger w-100">Görevi sil</button>
     </div>
   `;
+
   editTaskSidebar.classList.add("open");
+
+  // Handle readOnly option
+  if (options.readOnly) {
+    // Hide all edit pencils
+    editTaskFields.querySelectorAll(".edit-pencil").forEach((el) => {
+      el.style.display = "none";
+    });
+    // Hide delete button
+    const deleteBtn = editTaskFields.querySelector("#delete-task-btn");
+    if (deleteBtn) deleteBtn.style.display = "none";
+  } else {
+    // Show all edit pencils and delete button
+    editTaskFields.querySelectorAll(".edit-pencil").forEach((el) => {
+      el.style.display = "";
+    });
+    const deleteBtn = editTaskFields.querySelector("#delete-task-btn");
+    if (deleteBtn) deleteBtn.style.display = "";
+  }
 
   editTaskFields.querySelectorAll(".edit-pencil").forEach((pencil) => {
     pencil.addEventListener("click", function () {
+      if (options.readOnly) return; // Prevent editing in read-only mode
       const key = this.getAttribute("data-key");
       const valueSpan = editTaskFields.querySelector(
         `.field-value[data-key="${key}"]`

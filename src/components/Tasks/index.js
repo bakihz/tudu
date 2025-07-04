@@ -13,13 +13,17 @@ import { renderTaskList } from "./taskList.js";
 import { setupTaskForm } from "./taskForm.js";
 let showCompletedOnly = false;
 async function loadTasksFromDatabase() {
-  console.log("Loading tasks from database...");
   const tasks = await getTasks();
   renderTaskList(tasks, loadTasksFromDatabase, showCompletedOnly);
 }
 
 setupTaskForm(taskForm, loadTasksFromDatabase, addTaskSidebar, assigneeSelect);
 await loadTasksFromDatabase();
+
+const userType = localStorage.getItem("userType");
+if (userType === "admin") {
+  document.body.classList.add("admin-type");
+}
 
 // Sidebar open/close handlers
 if (openAddTaskBtn && addTaskSidebar) {
@@ -95,7 +99,11 @@ if (showCompletedBtn) {
   showCompletedBtn.addEventListener("click", () => {
     showCompletedOnly = !showCompletedOnly;
     showCompletedBtn.classList.toggle("active", showCompletedOnly);
-    showCompletedBtn.textContent = showCompletedOnly ? "Aktif Görevler" : "Tamamlanmış Görevler";
+    showCompletedBtn.textContent = showCompletedOnly
+      ? "Aktif Görevler"
+      : "Tamamlanmış Görevler";
     loadTasksFromDatabase();
   });
 }
+const userName = localStorage.getItem("userName") || "Kullanıcı";
+document.getElementById("current-user-name").textContent = userName;

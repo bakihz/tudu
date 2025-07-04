@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld("api", {
   updateTask: (task) => ipcRenderer.invoke("update-task", task),
   deleteTask: (taskId) => ipcRenderer.invoke("delete-task", taskId),
   getUsers: () => ipcRenderer.invoke("get-users"),
+  sendBadgeCount: (count) => ipcRenderer.send("set-badge-count", count),
 });

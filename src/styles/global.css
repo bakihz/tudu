@@ -1,0 +1,59 @@
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  color: #fff;
+}
+
+.card, .login-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 20px 20px 60px #0d1a20, -20px -20px 60px #314d60;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 12px;
+  background: #1b2b38;
+  box-shadow: inset 6px 6px 12px #0d1a20, inset -6px -6px 12px #2f4c5c;
+  color: #fff;
+  outline: none;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #aaa;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #2a80b9;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 6px 12px rgba(42, 128, 185, 0.4);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: #1e5f86;
+}
+button:active {
+  background: #1a4b6c;
+  box-shadow: 0 4px 8px rgba(42, 128, 185, 0.3);
+}
