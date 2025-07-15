@@ -8,6 +8,12 @@
       content="default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net;"
     />
     <link rel="stylesheet" href="../src/styles/global.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Variables.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Buttons.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Sidebar.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Modals.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Forms.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Tasklist.css" />
     <link rel="stylesheet" href="../src/styles/Tasks/TasksPage.css" />
     <style>
       #close-add-task-sidebar.btn-close {
@@ -23,11 +29,9 @@
       <a href="../public/finance-overview.html" class="nav-link admin-only"
         >Finans</a
       >
-      <a href="users.html" id="completedTaskNav" class="nav-link admin-only"
-        >Tamamlanmış görevler</a
-      >
+      <a href="#" class="nav-link admin-only">Kullanıcılar</a>
       <a href="tasks.html" class="nav-link admin-only">Görevler</a>
-      <a href="settings.html" class="nav-link admin-only">Ayarlar</a>
+      <a href="#" class="nav-link admin-only">Ayarlar</a>
       <a href="#" id="logout-link" class="nav-link text-danger">Çıkış yap</a>
     </nav>
 
@@ -192,7 +196,32 @@
         class="sidebar-header d-flex justify-content-between align-items-center"
       >
         <h2>Görev Detayları</h2>
-        <button id="close-edit-task-sidebar" class="btn-close"></button>
+        <button
+          id="close-edit-task-sidebar"
+          class="btn-close"
+          aria-label="Kapat"
+        >
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <line
+              x1="6"
+              y1="6"
+              x2="16"
+              y2="16"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <line
+              x1="16"
+              y1="6"
+              x2="6"
+              y2="16"
+              stroke="#fff"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
       </div>
       <div id="edit-task-fields" class="p-3"></div>
     </div>

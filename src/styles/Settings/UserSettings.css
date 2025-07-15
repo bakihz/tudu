@@ -1,0 +1,52 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f8f9fa;
+}
+.settings-container {
+  max-width: 400px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 32px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #0001;
+}
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+label {
+  display: block;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+button {
+  margin-top: 24px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background: #00bfae;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+button:hover {
+  background: #009e90;
+}
+.success,
+.error {
+  margin-top: 16px;
+  text-align: center;
+}
+.success {
+  color: #00bfae;
+}
+.error {
+  color: #e53935;
+}

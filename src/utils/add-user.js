@@ -1,9 +1,9 @@
-const bcrypt = require("bcrypt");
 const { poolPromise, sql } = require("./db");
+const { hashPassword, comparePassword } = require("./auth");
 
 const addUser = async (username, userType, plainPassword) => {
   try {
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    const hashedPassword = await hashPassword(plainPassword);
 
     const pool = await poolPromise;
     await pool
@@ -24,3 +24,9 @@ const addUser = async (username, userType, plainPassword) => {
 // Example usage
 addUser("admin", "admin", "admin123");
 addUser("user", "user", "user123");
+
+// To hash a password before saving:
+// const hashed = await hashPassword("userpassword");
+
+// To check a password during login:
+// const isMatch = await comparePassword("inputpassword", hashed);

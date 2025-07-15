@@ -1,0 +1,64 @@
+.form-select,
+.form-control,
+textarea {
+  background: #1b2b38 !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: inset 6px 6px 12px #0d1a20, inset -6px -6px 12px #2f4c5c !important;
+}
+input,
+select,
+textarea {
+  border-radius: 16px !important;
+  background: rgba(27, 43, 56, 0.95) !important;
+  color: #fff !important;
+  border: 1.5px solid rgba(0, 191, 174, 0.1) !important;
+  box-shadow: 0 2px 8px #0d1a2022 inset !important;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary-color) !important;
+  background: rgba(27, 43, 56, 1) !important;
+  box-shadow: 0 0 0 2px var(--primary-color-light) !important;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #b2f7ee !important;
+  opacity: 1 !important;
+}
+my-input,
+.my-select,
+textarea {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #00bfae22;
+  background: rgba(27, 43, 56, 0.95);
+  color: #fff;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+.my-select:focus,
+.my-input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #00bfae;
+  box-shadow: 0 0 0 2px #5fffe6;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--primary-color);
+  width: 1.2em;
+  height: 1.2em;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--primary-color);
+}
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(2);
+  opacity: 1;
+}

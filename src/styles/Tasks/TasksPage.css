@@ -1,47 +1,26 @@
-/* General layout and backgrounds */
+/* Hide admin-only by default, show for admin */
 .admin-only {
   display: none !important;
 }
 body.admin-type .admin-only {
   display: flex !important;
 }
+
 html,
 body {
   overflow: hidden !important;
   height: 100%;
   color: #fff !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
 }
+
 body {
   height: 100vh;
-  color: #fff !important;
+  background-color: #f3f4f6;
 }
-#side-nav {
-  display: flex;
-  flex-direction: column;
-  padding: 24px 16px;
-  width: 220px;
-  min-height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  background: rgba(20, 30, 40, 0.97) !important;
-  color: #fff !important;
-  z-index: 10;
-  border-right: none !important;
-}
-#side-nav h4 {
-  margin-bottom: 32px;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-#side-nav .nav-link {
-  color: #fff !important;
-  text-decoration: none;
-  margin-bottom: 16px;
-  font-size: 1rem;
-  transition: color 0.2s;
-  display: block;
-}
+
 #logout-link {
   margin-top: auto;
   color: #ff4d4f !important;
@@ -49,21 +28,10 @@ body {
   text-decoration: none;
   margin-bottom: 4vh !important;
 }
-#side-nav .nav-link:hover,
-#side-nav .nav-link.active {
-  background: linear-gradient(90deg, #00bfae33 0%, #5fffe633 100%) !important;
-  color: #fff !important;
-  border-radius: 4px;
-}
-#side-nav .text-danger {
-  color: #ff4d4f !important;
-  margin-top: auto;
-}
 
-/* Main content: dark background */
 .main-content {
   position: absolute;
-  left: 220px; /* width of sidebar */
+  left: 220px;
   right: 0;
   top: 0;
   bottom: 0;
@@ -80,7 +48,6 @@ body {
   border-left: none !important;
 }
 
-/* Card: glassy dark */
 .card {
   width: 82vw;
   max-width: none;
@@ -88,7 +55,7 @@ body {
   margin: 0 auto;
   background: rgba(20, 30, 40, 0.95);
   border-radius: 24px;
-  box-shadow: 0 8px 40px #0d1a20, 0 1.5px 8px #314d60;
+  box-shadow: 0 8px 40px #0d1a20, 0 1.5px 8px #314d60, 0 0 24px 0 #00bfae22;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -96,103 +63,35 @@ body {
   padding: 32px 32px 24px 32px;
   margin-left: 4vw;
 }
+
 #todo-app {
   width: 100%;
   color: #fff !important;
 }
-.form-select,
-.form-control,
-textarea {
-  background: #1b2b38 !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: inset 6px 6px 12px #0d1a20, inset -6px -6px 12px #2f4c5c !important;
-}
-.form-label,
-label,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-span,
-th,
-td,
-.btn,
-.list-group-item,
-.modal > div {
-  color: #fff !important;
-}
-.btn-primary,
-.btn-outline-secondary {
-  width: auto;
-  min-width: 120px;
-}
-.add-task-sidebar,
-.edit-task-sidebar {
-  background: rgba(20, 30, 40, 0.98) !important;
-  color: #fff !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
-}
-.modal > div {
-  background: #1b2b38 !important;
-  color: #fff !important;
-}
-/* General body styling */
-body {
-  background-color: #f3f4f6; /* Light gray background */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  margin: 0;
-  padding: 0;
-}
+
 * {
   padding: 0;
   margin: 0;
 }
 
-/* Center the todo app container */
 .container {
-  margin-left: 220px; /* Same as sidebar width */
-  min-height: 100vh; /* Fill vertical space */
-  width: calc(100% - 220px); /* Fill horizontal space minus sidebar */
+  margin-left: 220px;
+  min-height: 100vh;
+  width: calc(100% - 220px);
   padding: 20px;
   border-radius: 12px;
-  background-color: #ffffff; /* White background */
+  background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
 
-.main-content {
-  position: absolute;
-  left: 220px; /* width of sidebar */
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  width: auto;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: #fff;
-  border-left: none !important;
-}
-
-/* Header styling */
 h1 {
   font-size: 2rem;
-  color: #0078d4; /* Microsoft blue */
+  color: #0078d4;
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Todo app title */
 #todo-app h2 {
   font-size: 1.5rem;
   color: #333;
@@ -200,13 +99,9 @@ h1 {
   font-weight: 600;
 }
 
-/* Input field styling */
 #new-todo-admin {
   color: #fff !important;
   background: #1b2b38 !important;
-  border: none !important;
-}
-#new-todo-admin {
   border: 1px solid #d1d1d1;
   border-radius: 20px;
   padding: 10px 15px;
@@ -220,13 +115,11 @@ h1 {
   border-color: #0078d4;
 }
 
-/* Make the placeholder text white for #new-todo-admin */
 #new-todo-admin::placeholder {
   color: #fff !important;
   opacity: 1 !important;
 }
 
-/* Add button styling */
 #add-todo-admin {
   background-color: #0078d4;
   border-color: #0078d4;
@@ -242,29 +135,6 @@ h1 {
   transform: scale(1.05);
 }
 
-/* Todo list styling */
-#todo-list-admin {
-  margin-top: 20px;
-}
-
-#todo-list-admin .list-group-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  background-color: #f9f9f9;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-}
-
-#todo-list-admin .list-group-item:hover {
-  background-color: #eaf4fb;
-  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.07);
-}
-
-/* Complete button styling */
 .complete-task {
   background-color: transparent;
   border: none;
@@ -278,11 +148,10 @@ h1 {
   color: #005a9e;
 }
 
-/* Delete button styling */
 .delete-task {
   background-color: transparent;
   border: none;
-  color: #d83b01; /* Microsoft red */
+  color: #d83b01;
   font-size: 1.2rem;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -292,21 +161,19 @@ h1 {
   color: #a4262c;
 }
 
-/* Info paragraph styling */
 #info {
   font-size: 0.9rem;
-  color: #6c757d; /* Bootstrap muted text color */
+  color: #6c757d;
   text-align: center;
   margin-top: 20px;
 }
 
-/* Context menu styling */
 #context-menu {
   z-index: 1000;
   border-radius: 8px;
   min-width: 150px;
   font-size: 0.9rem;
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 10px;
 }
@@ -328,128 +195,6 @@ h1 {
   background-color: #f3f3f3;
 }
 
-/* Sidebar styling */
-.task-sidebar {
-  position: fixed;
-  top: 0;
-  right: -400px; /* Hidden by default */
-  width: 400px;
-  height: 100%;
-  background-color: #1e1e1e; /* Dark background */
-  color: #fff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
-  overflow-y: auto;
-  transition: right 0.3s ease;
-  padding: 20px;
-  z-index: 1000;
-}
-
-.task-sidebar.open {
-  right: 0; /* Slide in when open */
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.sidebar-header h3 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.sidebar-content p {
-  margin-bottom: 10px;
-}
-
-.sidebar-content textarea {
-  background-color: #2e2e2e;
-  color: #fff;
-  border: 1px solid #444;
-  resize: none;
-}
-
-/* Side navigation styling */
-#side-nav {
-  height: 100vh;
-  min-width: 220px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  border-right: none !important;
-  background: #f8f9fa;
-  z-index: 1050;
-}
-
-#side-nav .nav-link {
-  color: #333;
-  font-weight: 500;
-}
-
-#side-nav .nav-link.active,
-#side-nav .nav-link:hover {
-  background: #e9ecef;
-  color: #007bff;
-  border-radius: 4px;
-}
-
-.add-task-sidebar {
-  position: fixed;
-  top: 0;
-  right: -450px; /* Hidden by default */
-  width: 450px;
-  height: 100vh;
-  background: #fff;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
-  transition: right 0.3s;
-  z-index: 2000;
-  overflow-y: auto;
-}
-.add-task-sidebar.open {
-  right: 0;
-}
-.add-task-sidebar .sidebar-header {
-  padding: 20px 20px 0 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.edit-task-sidebar {
-  position: fixed;
-  top: 0;
-  right: -450px;
-  width: 450px;
-  height: 100vh;
-  background: #fff;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
-  transition: right 0.3s;
-  z-index: 2100;
-  overflow-y: auto;
-}
-.edit-task-sidebar.open {
-  right: 0;
-}
-.edit-task-sidebar .sidebar-header {
-  padding: 20px 20px 0 20px;
-  border-bottom: 1px solid #eee;
-}
-.edit-pencil {
-  cursor: pointer;
-  margin-left: 10px;
-  color: #007bff;
-  font-size: 1.1em;
-  vertical-align: middle;
-}
-.edit-pencil:hover {
-  color: #0056b3;
-}
-.edit-input {
-  width: 70%;
-  margin-right: 10px;
-}
-
-/* Fade in for creation/copy */
 .task-fade-in {
   animation: taskFadeIn 0.5s;
 }
@@ -464,7 +209,6 @@ h1 {
   }
 }
 
-/* Fade out for deletion */
 .task-fade-out {
   animation: taskFadeOut 0.4s forwards;
 }
@@ -477,7 +221,6 @@ h1 {
   }
 }
 
-/* Completion (line-through + color) */
 .task-completed {
   transition: color 0.3s;
   color: #aaa;
@@ -486,7 +229,6 @@ h1 {
   background: linear-gradient(90deg, #e0ffe0 0%, #fff 100%);
 }
 
-/* Add to your CSS */
 .task-completed-animate {
   animation: taskCompleteFlash 0.4s;
 }
@@ -505,6 +247,7 @@ h1 {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .urgent-text {
   color: #e53935;
   font-weight: bold;
@@ -513,9 +256,7 @@ h1 {
   content: "⚡";
   margin-right: 4px;
 }
-.list-group-item {
-  padding: 12px 18px;
-}
+
 .deadline-overdue {
   color: #d32f2f;
   font-weight: bold;
@@ -528,9 +269,6 @@ h1 {
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 36px;
-}
-
-#user-filter {
   border: 1.5px solid #0078d4;
   border-radius: 18px;
   padding: 8px 16px;
@@ -553,255 +291,6 @@ h1 {
   box-shadow: 0 0 0 2px #cce6ff;
 }
 
-.task-group-header {
-  font-weight: 600;
-  /* background and color are now set above */
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin-top: 18px;
-  margin-bottom: 6px;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-}
-
-/* Make all group headers and list items dark */
-.list-group-item,
-.bg-white,
-.bg-light,
-.task-container,
-.todo-item,
-.card .list-group-item {
-  background: rgba(30, 40, 55, 0.95) !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Make section headers (like "Bugün 1") dark too */
-.list-group-item.active,
-.list-group-item-primary,
-.section-header,
-.group-header,
-.task-group-header {
-  background: rgba(40, 50, 70, 0.98) !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Remove background and color overrides for .task-group-header from previous rules */
-.task-group-header {
-  font-weight: 600;
-  /* background and color are now set above */
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin-top: 18px;
-  margin-bottom: 6px;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
-}
-
-/* Modern glassy card and sidebar */
-.card,
-.add-task-sidebar,
-.edit-task-sidebar {
-  background: rgba(20, 30, 40, 0.85) !important;
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1.5px solid rgba(0, 191, 174, 0.1);
-  box-shadow: 0 8px 40px #0d1a20, 0 1.5px 8px #314d60, 0 0 32px 0 #00bfae22;
-}
-
-/* Sidebar header */
-.add-task-sidebar .sidebar-header,
-.edit-task-sidebar .sidebar-header {
-  border-bottom: 1px solid rgba(0, 191, 174, 0.12);
-  margin-bottom: 18px;
-}
-
-/* Inputs and selects: glassy, rounded, focus effect */
-input,
-select,
-textarea {
-  border-radius: 16px !important;
-  background: rgba(27, 43, 56, 0.95) !important;
-  color: #fff !important;
-  border: 1.5px solid rgba(0, 191, 174, 0.1) !important;
-  box-shadow: 0 2px 8px #0d1a2022 inset !important;
-  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--primary-color) !important;
-  background: rgba(27, 43, 56, 1) !important;
-  box-shadow: 0 0 0 2px var(--primary-color-light) !important;
-}
-
-/* Button: glow and scale on hover */
-.btn-primary,
-#add-todo-admin {
-  background: var(--primary-gradient) !important;
-  border: none !important;
-  color: #fff !important;
-  box-shadow: 0 4px 24px 0 rgba(0, 191, 174, 0.13), 0 1.5px 8px #314d60;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  border-radius: 16px !important;
-  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-}
-.btn-primary:hover,
-#add-todo-admin:hover {
-  background: var(--primary-gradient-dark) !important;
-  box-shadow: 0 6px 32px 0 rgba(0, 191, 174, 0.22), 0 1.5px 8px #314d60;
-  transform: translateY(-2px) scale(1.06);
-  filter: brightness(1.08);
-}
-
-/* Group header: gradient, glow, border */
-.task-group-header,
-.list-group-item.active,
-.list-group-item-primary,
-.section-header,
-.group-header {
-  background: linear-gradient(90deg, #183c3c 0%, #1e4d4d 100%) !important;
-  color: #fff !important;
-  border-left: 4px solid var(--primary-color);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.1);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding-left: 24px;
-}
-
-/* Checkbox and radio: larger and colored */
-input[type="checkbox"],
-input[type="radio"] {
-  accent-color: var(--primary-color);
-  width: 1.2em;
-  height: 1.2em;
-}
-
-/* Subtle hover for list items */
-.list-group-item:hover {
-  background: rgba(0, 191, 174, 0.08) !important;
-  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.08);
-}
-
-/* Make placeholder text lighter */
-input::placeholder,
-textarea::placeholder {
-  color: #b2f7ee !important;
-  opacity: 1 !important;
-}
-
-/* Sidebar close button: more visible */
-.add-task-sidebar .btn-close,
-.edit-task-sidebar .btn-close {
-  filter: invert(1) brightness(2) drop-shadow(0 0 2px #00bfae);
-  opacity: 1;
-}
-
-/* Make sidebar close button visually match the add task button */
-#close-add-task-sidebar.btn-close {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 16px;
-  background: linear-gradient(90deg, #00bfae 0%, #5fffe6 100%);
-  border: none;
-  color: #fff !important; /* Always white */
-  font-size: 2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, color 0.2s;
-  box-shadow: none;
-  opacity: 0.85;
-  cursor: pointer;
-  margin-left: 12px;
-  margin-right: 0;
-  padding: 0;
-}
-
-#close-add-task-sidebar.btn-close:hover {
-  background: rgba(0, 191, 174, 0.12);
-  color: #fff !important; /* Stay white on hover */
-  opacity: 1;
-}
-
-#close-add-task-sidebar.btn-close svg line {
-  stroke: #fff !important;
-}
-
-/* Replace Bootstrap blue (#007bff, #0078d4, #005a9e, etc.) with a modern teal/cyan */
-:root {
-  --primary-color: #00bfae;
-  --primary-color-dark: #009e90;
-  --primary-color-light: #5fffe6;
-  --primary-gradient: linear-gradient(90deg, #00bfae 0%, #5fffe6 100%);
-  --primary-gradient-dark: linear-gradient(90deg, #009e90 0%, #00bfae 100%);
-}
-
-/* Active nav link */
-#side-nav .nav-link.active,
-#side-nav .nav-link:hover {
-  background: linear-gradient(90deg, #00bfae33 0%, #5fffe633 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.08);
-}
-
-/* Add a subtle glow to the main card */
-.card {
-  box-shadow: 0 8px 40px #0d1a20, 0 1.5px 8px #314d60, 0 0 24px 0 #00bfae22;
-}
-
-/* Make checkboxes and switches more visible */
-input[type="checkbox"],
-input[type="radio"] {
-  accent-color: var(--primary-color);
-}
-.my-btn {
-  padding: 10px 24px;
-  border-radius: 16px;
-  border: none;
-  font-weight: 600;
-  background: var(
-    --primary-gradient,
-    linear-gradient(90deg, #00bfae 0%, #5fffe6 100%)
-  );
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-.my-btn-primary:hover {
-  background: var(
-    --primary-gradient-dark,
-    linear-gradient(90deg, #009e90 0%, #00bfae 100%)
-  );
-}
-.my-input,
-.my-select,
-textarea {
-  width: 100%;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1.5px solid #00bfae22;
-  background: rgba(27, 43, 56, 0.95);
-  color: #fff;
-  margin-bottom: 12px;
-  font-size: 1rem;
-}
-.my-select:focus,
-.my-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: #00bfae;
-  box-shadow: 0 0 0 2px #5fffe6;
-}
 .mb-2 {
   margin-bottom: 0.5rem !important;
 }
@@ -839,7 +328,6 @@ textarea:focus {
   justify-content: space-between !important;
 }
 
-/* Square yellow box with close icon */
 .square-highlight-box {
   display: flex;
   align-items: center;
@@ -854,85 +342,7 @@ textarea:focus {
   color: #222;
   margin-bottom: 1rem;
   position: relative;
-  /* Make it square if content allows */
   aspect-ratio: 1 / 1;
   width: 56px;
   height: 56px;
-}
-
-/* Close icon inside the box */
-.square-highlight-box .close-btn {
-  background: none;
-  border: none;
-  color: #222;
-  font-size: 1.3rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 8px;
-  padding: 0;
-  line-height: 1;
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  opacity: 0.7;
-  transition: opacity 0.2s;
-}
-.square-highlight-box .close-btn:hover {
-  opacity: 1;
-  color: #e53935;
-}
-
-/* Style the close (X) button in the sidebar as a square icon and always white */
-#close-add-task-sidebar.btn-close {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 8px;
-  background: none;
-  border: none;
-  color: #fff !important; /* Always white */
-  font-size: 2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s, color 0.2s;
-  box-shadow: none;
-  opacity: 0.85;
-  cursor: pointer;
-  margin-left: 12px;
-  margin-right: 0;
-  padding: 0;
-}
-
-#close-add-task-sidebar.btn-close:hover {
-  background: linear-gradient(90deg, #009e90 0%, #00bfae 100%);
-}
-
-#close-add-task-sidebar.btn-close svg line {
-  stroke: #fff !important;
-}
-
-#custom-interval-modal.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  background: rgba(0, 0, 0, 0.4);
-}
-
-#custom-interval-modal .modal > div,
-#custom-interval-modal > div {
-  background: #18232e;
-  color: #fff;
-  border-radius: 16px;
-  padding: 32px 24px;
-  min-width: 320px;
-  box-shadow: 0 8px 32px #000a;
 }

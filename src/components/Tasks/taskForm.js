@@ -71,12 +71,19 @@ export function setupTaskForm(
 
   const recurringSelect = document.getElementById("task-recurring");
   const intervalInput = document.getElementById("task-interval");
+  const intervalSelect = document.getElementById("task-interval");
+
   function updateIntervalState() {
     if (recurringSelect.value === "1") {
       intervalInput.disabled = false;
+      // Set interval to daily by default if not already set
+      if (intervalSelect && (!intervalSelect.value || intervalSelect.value === "")) {
+        intervalSelect.value = "daily";
+      }
     } else {
       intervalInput.disabled = true;
       intervalInput.value = "";
+      if (intervalSelect) intervalSelect.value = ""; // Optionally reset interval select
     }
   }
   if (recurringSelect && intervalInput) {
@@ -84,7 +91,6 @@ export function setupTaskForm(
     updateIntervalState(); // Set initial state
   }
 
-  const intervalSelect = document.getElementById("task-interval");
   const customIntervalModal = document.getElementById("custom-interval-modal");
   const customIntervalNumber = document.getElementById(
     "custom-interval-number"

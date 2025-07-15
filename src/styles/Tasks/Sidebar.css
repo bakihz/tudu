@@ -1,0 +1,184 @@
+#side-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  width: 220px;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: rgba(20, 30, 40, 0.97) !important;
+  color: #fff !important;
+  z-index: 10;
+  border-right: none !important;
+}
+#side-nav h4 {
+  margin-bottom: 32px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+#side-nav .nav-link {
+  color: #fff !important;
+  text-decoration: none;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  transition: color 0.2s;
+  display: block;
+}
+#side-nav .nav-link:hover,
+#side-nav .nav-link.active {
+  background: linear-gradient(90deg, #00bfae33 0%, #5fffe633 100%) !important;
+  color: #fff !important;
+  border-radius: 4px;
+}
+#side-nav .text-danger {
+  color: #ff4d4f !important;
+  margin-top: auto;
+}
+.add-task-sidebar,
+.edit-task-sidebar {
+  background: rgba(20, 30, 40, 0.98) !important;
+  color: #fff !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+.task-sidebar {
+  position: fixed;
+  top: 0;
+  right: -400px; /* Hidden by default */
+  width: 400px;
+  height: 100%;
+  background-color: #1e1e1e; /* Dark background */
+  color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  transition: right 0.3s ease;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.task-sidebar.open {
+  right: 0; /* Slide in when open */
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.sidebar-content p {
+  margin-bottom: 10px;
+}
+
+.sidebar-content textarea {
+  background-color: #2e2e2e;
+  color: #fff;
+  border: 1px solid #444;
+  resize: none;
+}
+
+/* Side navigation styling */
+#side-nav {
+  height: 100vh;
+  min-width: 220px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  border-right: none !important;
+  background: #f8f9fa;
+  z-index: 1050;
+}
+
+#side-nav .nav-link {
+  color: #333;
+  font-weight: 500;
+}
+
+#side-nav .nav-link.active,
+#side-nav .nav-link:hover {
+  background: #e9ecef;
+  color: #007bff;
+  border-radius: 4px;
+}
+
+.add-task-sidebar {
+  position: fixed;
+  top: 0;
+  right: -450px; /* Hidden by default */
+  width: 450px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+  transition: right 0.3s;
+  z-index: 2000;
+  overflow-y: auto;
+}
+.add-task-sidebar.open {
+  right: 0;
+}
+.add-task-sidebar .sidebar-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.edit-task-sidebar {
+  position: fixed;
+  top: 0;
+  right: -450px;
+  width: 450px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
+  transition: right 0.3s;
+  z-index: 2100;
+  overflow-y: auto;
+}
+.edit-task-sidebar.open {
+  right: 0;
+}
+.edit-task-sidebar .sidebar-header {
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #eee;
+}
+.edit-pencil {
+  cursor: pointer;
+  margin-left: 10px;
+  color: #007bff;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+.edit-pencil:hover {
+  color: #0056b3;
+}
+.edit-input {
+  width: 70%;
+  margin-right: 10px;
+}
+.card,
+.add-task-sidebar,
+.edit-task-sidebar {
+  background: rgba(20, 30, 40, 0.85) !important;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1.5px solid rgba(0, 191, 174, 0.1);
+  box-shadow: 0 8px 40px #0d1a20, 0 1.5px 8px #314d60, 0 0 32px 0 #00bfae22;
+}
+
+/* Sidebar header */
+.add-task-sidebar .sidebar-header,
+.edit-task-sidebar .sidebar-header {
+  border-bottom: 1px solid rgba(0, 191, 174, 0.12);
+  margin-bottom: 18px;
+}
+#side-nav .nav-link.active,
+#side-nav .nav-link:hover {
+  background: linear-gradient(90deg, #00bfae33 0%, #5fffe633 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.08);
+}

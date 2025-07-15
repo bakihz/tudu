@@ -331,3 +331,9 @@ function formatTurkishDeadline(deadline) {
   };
   return new Date(deadline).toLocaleString("tr-TR", options);
 }
+
+document
+  .getElementById("close-edit-task-sidebar")
+  ?.addEventListener("click", () => {
+    editTaskSidebar.classList.remove("open");
+  });

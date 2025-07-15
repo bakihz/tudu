@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Check if the user is already logged in
+if (localStorage.getItem("userId")) {
+  // Redirect to the main app page
+  window.location.href = "tasks.html";
+}
+
 document
   .getElementById("login-form")
   .addEventListener("submit", async (event) => {
@@ -33,6 +39,10 @@ document
         window.currentUserName = result.userName || "Siz";
         console.log("User Name:", window.currentUserName);
         localStorage.setItem("userName", window.currentUserName);
+        // After successful login
+        localStorage.setItem("userId", result.userId);
+        localStorage.setItem("userType", result.userType);
+        localStorage.setItem("userName", result.userName);
         window.location.href = "./tasks.html";
       } else {
         alert(

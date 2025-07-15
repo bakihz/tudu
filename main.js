@@ -8,7 +8,7 @@ const {
 } = require("electron");
 const { createCanvas } = require("canvas"); // npm install canvas
 const path = require("path");
-const { poolPromise, sql } = require("./server/js/db"); // <-- fixed path
+const { poolPromise, sql } = require("./src/utils/db"); // <-- fixed path
 const { startServer } = require("./server.js");
 
 let win;
@@ -20,7 +20,7 @@ app.on("ready", () => {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(__dirname, "logo2.png"), // Use your icon file here
+    icon: path.join(__dirname, "icon.ico"), // Use your icon file here
     title: "Tudu",
     fullscreen: false,
     webPreferences: {
@@ -37,7 +37,7 @@ app.on("ready", () => {
   startServer();
 
   // Tray setup
-  tray = new Tray(path.join(__dirname, "logo.ico")); // Use your icon file here
+  tray = new Tray(path.join(__dirname, "icon.ico")); // Use your icon file here
   const contextMenu = Menu.buildFromTemplate([
     {
       label: "Göster",
@@ -82,6 +82,7 @@ app.on("activate", () => {
     win = new BrowserWindow({
       width: 800,
       height: 600,
+      icon: path.join(__dirname, "logo4.ico"), // Use your icon file here
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
         contextIsolation: true,

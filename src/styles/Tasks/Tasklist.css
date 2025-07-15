@@ -1,0 +1,92 @@
+#todo-list-admin {
+  margin-top: 20px;
+}
+
+#todo-list-admin .list-group-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+#todo-list-admin .list-group-item:hover {
+  background-color: #eaf4fb;
+  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.07);
+}
+.list-group-item {
+  padding: 12px 18px;
+}
+.list-group-item,
+.bg-white,
+.bg-light,
+.task-container,
+.todo-item,
+.card .list-group-item {
+  background: rgba(30, 40, 55, 0.95) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Make section headers (like "Bugün 1") dark too */
+.list-group-item.active,
+.list-group-item-primary,
+.section-header,
+.group-header,
+.task-group-header {
+  background: rgba(40, 50, 70, 0.98) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.task-group-header,
+.list-group-item.active,
+.list-group-item-primary,
+.section-header,
+.group-header {
+  background: linear-gradient(90deg, #183c3c 0%, #1e4d4d 100%) !important;
+  color: #fff !important;
+  border-left: 4px solid var(--primary-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.1);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding-left: 24px;
+}
+
+/* Checkbox and radio: larger and colored */
+
+/* Subtle hover for list items */
+.list-group-item:hover {
+  background: rgba(0, 191, 174, 0.08) !important;
+  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.08);
+}
+.task-group-header {
+  font-weight: 600;
+  /* background and color are now set above */
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}
+
+/* Make all group headers and list items dark */
+
+/* Remove background and color overrides for .task-group-header from previous rules */
+.task-group-header {
+  font-weight: 600;
+  /* background and color are now set above */
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src 'self' http://localhost:3000; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net;"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../src/styles/Settings/UserSettings.css" />
+    <title>User Settings</title>
+  </head>
+  <body>
+    <div class="settings-container">
+      <h1>Kullanıcı Ayarları</h1>
+
+      <!-- Admin Only: Add User Button -->
+      <button
+        id="add-user-btn"
+        class="admin-only"
+        style="
+          display: none;
+          margin-bottom: 20px;
+          background: #00bfae;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          padding: 10px 18px;
+          font-size: 1rem;
+          cursor: pointer;
+        "
+      >
+        + Kullanıcı Ekle
+      </button>
+
+      <form id="user-settings-form" autocomplete="off">
+        <label for="current-password">Mevcut Şifre:</label>
+        <input
+          type="password"
+          id="current-password"
+          name="current-password"
+          autocomplete="current-password"
+          required
+        />
+
+        <label for="new-password">Yeni Şifre:</label>
+        <input
+          type="password"
+          id="new-password"
+          name="new-password"
+          autocomplete="new-password"
+          required
+        />
+
+        <label for="confirm-password">Yeni Şifre (Tekrar):</label>
+        <input
+          type="password"
+          id="confirm-password"
+          name="confirm-password"
+          autocomplete="new-password"
+          required
+        />
+
+        <button type="submit">Değişiklikleri Kaydet</button>
+        <div id="settings-message"></div>
+      </form>
+      <a href="tasks.html">Görevler</a>
+    </div>
+    <script src="../src/components/Settings/UserSettings.js"></script>
+  </body>
+</html>

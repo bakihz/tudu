@@ -53,6 +53,7 @@ const logoutLink = document.getElementById("logout-link");
 if (logoutLink) {
   logoutLink.addEventListener("click", () => {
     // Optionally clear any session or token here
+    localStorage.clear(); // Clear all local storage
     window.location.href = "login.html"; // Redirect to login
   });
 }
@@ -107,3 +108,19 @@ if (showCompletedBtn) {
 }
 const userName = localStorage.getItem("userName") || "Kullanıcı";
 document.getElementById("current-user-name").textContent = userName;
+
+const userNameEl = document.getElementById("current-user-name");
+if (userNameEl) {
+  userNameEl.style.cursor = "pointer";
+  userNameEl.title = "Ayarlar";
+  userNameEl.addEventListener("click", function () {
+    window.location.href = "user-settings.html";
+  });
+}
+// Add hover effect for user name
+userNameEl.addEventListener("mouseover", function () {
+  userNameEl.style.textDecoration = "underline";
+});
+userNameEl.addEventListener("mouseout", function () {
+  userNameEl.style.textDecoration = "none";
+});
