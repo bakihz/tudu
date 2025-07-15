@@ -77,7 +77,10 @@ export function setupTaskForm(
     if (recurringSelect.value === "1") {
       intervalInput.disabled = false;
       // Set interval to daily by default if not already set
-      if (intervalSelect && (!intervalSelect.value || intervalSelect.value === "")) {
+      if (
+        intervalSelect &&
+        (!intervalSelect.value || intervalSelect.value === "")
+      ) {
         intervalSelect.value = "daily";
       }
     } else {
@@ -120,8 +123,8 @@ export function setupTaskForm(
     customIntervalOk.addEventListener("click", () => {
       const num = parseInt(customIntervalNumber.value, 10);
       const unit = customIntervalUnit.value;
-      if (isNaN(num) || num < 1) {
-        alert("0'dan büyük bir sayı girin.");
+      if (isNaN(num) || num < 1 || num > 9) {
+        alert("1 ile 9 arasında bir sayı girin.");
         return;
       }
       customIntervalValue = { num, unit };

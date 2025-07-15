@@ -1,4 +1,11 @@
 #todo-list-admin {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  max-height: 60vh;
+  min-height: 200px;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #00bfae #e3f6ff;
   margin-top: 20px;
 }
 

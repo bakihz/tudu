@@ -283,7 +283,6 @@ export function openEditSidebar(task, loadTasksFromDatabase, options = {}) {
               task.Interval = null;
             }
 
-            console.log("Updating task:", task); // <--- See what is sent!
             await updateTask(task); // Make sure this sends the correct object to your backend
             if (loadTasksFromDatabase) await loadTasksFromDatabase();
             openEditSidebar(task, loadTasksFromDatabase);

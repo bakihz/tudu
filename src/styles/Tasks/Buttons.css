@@ -155,7 +155,7 @@ td,
   min-width: 36px;
   min-height: 36px;
   border-radius: 8px;
-  background: none;
+  background: linear-gradient(90deg, #00bfae 0%, #5fffe6 100%);
   border: none;
   color: #fff !important; /* Always white */
   font-size: 2rem;

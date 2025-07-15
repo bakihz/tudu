@@ -20,7 +20,7 @@ app.on("ready", () => {
   win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(__dirname, "icon.ico"), // Use your icon file here
+    icon: path.join(__dirname, "icon.ico"),
     title: "Tudu",
     fullscreen: false,
     webPreferences: {
@@ -32,9 +32,18 @@ app.on("ready", () => {
     },
   });
 
+  // Disable menu bar and prevent Alt key focus loss
+  win.setMenuBarVisibility(true);
+  win.setAutoHideMenuBar(false);
+
   win.maximize();
   win.loadFile("./public/login.html");
-  startServer();
+
+  // Start the server ONLY ONCE here
+  if (!app.serverStarted) {
+    startServer();
+    app.serverStarted = true;
+  }
 
   // Tray setup
   tray = new Tray(path.join(__dirname, "icon.ico")); // Use your icon file here
@@ -79,18 +88,37 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    win = new BrowserWindow({
-      width: 800,
-      height: 600,
-      icon: path.join(__dirname, "logo4.ico"), // Use your icon file here
-      webPreferences: {
-        preload: path.join(__dirname, "preload.js"),
-        contextIsolation: true,
-        nodeIntegration: false,
-      },
-    });
-    win.loadFile("/login/login.html");
+    if (!win) {
+      win = new BrowserWindow({
+        width: 800,
+        height: 600,
+        icon: path.join(__dirname, "icon.ico"),
+        webPreferences: {
+          preload: path.join(__dirname, "preload.js"),
+          contextIsolation: true,
+          nodeIntegration: false,
+        },
+      });
+      win.loadFile("./public/login.html");
+    } else {
+      win.show();
+    }
   }
+});
+
+app.on("browser-window-created", (_, window) => {
+  window.webContents.on("before-input-event", (event, input) => {
+    if (input.key === "Alt") {
+      event.preventDefault();
+    }
+  });
+
+  // Ensure window regains focus when any click occurs inside it
+  window.webContents.executeJavaScript(`
+    document.addEventListener('mousedown', function() {
+      window.focus();
+    });
+  `);
 });
 
 // --- IPC Handlers ---
@@ -198,7 +226,6 @@ ipcMain.handle("update-task", async (event, task) => {
       FROM Tasks t
       LEFT JOIN Users u ON t.CreatorID = u.UserID
     `);
-    console.log("Task updated successfully:", result.recordset);
     return { success: true, result: result.recordset };
   } catch (err) {
     console.error("Error updating task:", err);

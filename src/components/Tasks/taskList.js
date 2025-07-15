@@ -126,22 +126,29 @@ export function renderTaskList(
 
   // Combine user filter, deleted, and completed/today logic
   const visibleTasks = tasks.filter((task) => {
-    // User filter
-    if (!showMyCreated) {
-      if (selectedUserId !== "all" && String(task.UserID) !== selectedUserId)
-        return false;
-    } else {
-      // Show all tasks created by current user (including completed)
-      if (String(task.CreatorID) !== String(currentUserId)) return false;
-    }
     // Deleted filter
     if (task.isDeleted) return false;
 
     // Completed/active filter
     if (showCompleted) {
-      return !!task.Tick;
+      if (!task.Tick) return false;
     } else {
-      return !task.Tick;
+      if (task.Tick) return false;
+    }
+
+    // Creator filter logic
+    if (showMyCreated) {
+      // Show tasks created by current user
+      if (String(task.CreatorID) !== String(currentUserId)) return false;
+      // If user filter is not "all", filter by assignee too
+      if (selectedUserId !== "all" && String(task.UserID) !== selectedUserId)
+        return false;
+      return true;
+    } else {
+      // User filter logic for assigned tasks
+      if (selectedUserId !== "all" && String(task.UserID) !== selectedUserId)
+        return false;
+      return true;
     }
   });
   if (visibleTasks.length === 0) {

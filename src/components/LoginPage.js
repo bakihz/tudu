@@ -45,12 +45,41 @@ document
         localStorage.setItem("userName", result.userName);
         window.location.href = "./tasks.html";
       } else {
-        alert(
+        showCustomAlert(
           result.message || "Invalid username or password. Please try again."
         );
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("An error occurred. Please try again later.");
     }
   });
+
+function showCustomAlert(message) {
+  let modal = document.getElementById("custom-alert-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "custom-alert-modal";
+    modal.innerHTML = `
+      <div class="custom-alert-box">
+        <div style="margin-bottom:18px;">${message}</div>
+        <button id="custom-alert-ok" autofocus>Tamam</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const okBtn = document.getElementById("custom-alert-ok");
+    okBtn.onclick = () => {
+      modal.remove();
+    };
+    okBtn.focus();
+    // Listen for Enter key to close the alert
+    modal.addEventListener("keydown", function handler(e) {
+      if (e.key === "Enter") {
+        modal.remove();
+      }
+    });
+    // Focus the modal for keyboard events
+    modal.tabIndex = -1;
+    modal.focus();
+  }
+  modal.style.display = "flex";
+}

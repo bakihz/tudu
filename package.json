@@ -13,6 +13,7 @@
   },
   "build": {
     "appId": "com.haft.tudu",
+    "productName": "Tudu",
     "files": [
       "**/*"
     ],
