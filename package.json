@@ -9,11 +9,14 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "electron-rebuild",
+    "package": "electron-packager . Tudu --platform=win32 --arch=x64 --out=dist --overwrite --icon=icon.ico"
   },
   "build": {
     "appId": "com.haft.tudu",
     "productName": "Tudu",
+    "copyright": "Copyright © 2025 Bakihz",
     "files": [
       "**/*"
     ],
@@ -40,12 +43,13 @@
     "electron-packager": "^17.1.2"
   },
   "dependencies": {
-    "bcrypt": "^5.0.1",
+    "auto-launch": "^5.0.6",
+    "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
-    "canvas": "^3.1.2",
     "express": "^5.1.0",
     "git": "^0.1.5",
     "mssql": "^11.0.1",
+    "pureimage": "^0.4.18",
     "telnet": "^0.0.1"
   },
   "repository": {

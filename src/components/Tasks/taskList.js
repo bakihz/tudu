@@ -36,6 +36,24 @@ document
 
 let seenTaskIds = new Set();
 
+function updateBadgeCount(tasks) {
+  const now = new Date();
+  now.setHours(23, 59, 59, 999);
+
+  const currentUserId = localStorage.getItem("currentUserId");
+  const waitingCount = tasks.filter(
+    (task) =>
+      !task.Tick &&
+      !task.isDeleted &&
+      task.Deadline &&
+      new Date(task.Deadline) <= now &&
+      String(task.UserID) === String(currentUserId)
+  ).length;
+
+  // IPC üzerinden main sürecine badge sayısını gönder
+  window.api.sendBadgeCount(waitingCount);
+}
+
 async function loadTasksFromDatabase() {
   const tasks = await window.api.getTasks();
   renderTaskList(tasks, loadTasksFromDatabase, showCompleted);
@@ -100,6 +118,7 @@ function addCreatorFilter() {
   filterContainer.appendChild(creatorLabel);
 
   creatorFilter.addEventListener("change", () => {
+    populateUserFilter();
     loadTasksFromDatabase();
   });
 }
@@ -345,7 +364,7 @@ export function renderTaskList(
           if (typeof loadTasksFromDatabase === "function") {
             await loadTasksFromDatabase();
           }
-        }, 400);
+        }, 10);
       });
 
       listItem.addEventListener("click", (e) => {
@@ -433,8 +452,14 @@ async function populateUserFilter() {
   const userType = localStorage.getItem("userType");
   const userFilter = document.getElementById("user-filter");
   if (!userFilter) return;
-  // Remove all except "Tümü"
-  if (userType === "admin") {
+
+  // Check if creator filter is selected
+  const showMyCreated = document.getElementById(
+    "show-my-created-tasks"
+  )?.checked;
+
+  // If creator filter is checked, always show all users
+  if (showMyCreated || userType === "admin") {
     userFilter.innerHTML = '<option value="all">Tümü</option>';
     const users = await getUsers();
     users.forEach((user) => {
@@ -450,35 +475,10 @@ async function populateUserFilter() {
     const option = document.createElement("option");
     option.value = currentUserId;
     option.textContent = currentUserName;
-    // Show all tasks assigned to the current user
     userFilter.appendChild(option);
   }
 }
 populateUserFilter();
-
-function updateBadgeCount(tasks) {
-  const now = new Date();
-  now.setHours(23, 59, 59, 999); // End of today
-
-  const currentUserId = localStorage.getItem("currentUserId");
-  const waitingCount = tasks.filter(
-    (task) =>
-      !task.Tick &&
-      !task.isDeleted &&
-      task.Deadline &&
-      new Date(task.Deadline) <= now &&
-      String(task.UserID) === String(currentUserId) // Only tasks assigned to current user
-  ).length;
-  if (window.api && window.api.sendBadgeCount) {
-    window.api.sendBadgeCount(waitingCount);
-  } else if (window.electronAPI && window.electronAPI.sendBadgeCount) {
-    window.electronAPI.sendBadgeCount(waitingCount);
-  } else if (window.require) {
-    // fallback for nodeIntegration: true (not recommended)
-    const { ipcRenderer } = window.require("electron");
-    ipcRenderer.send("set-badge-count", waitingCount);
-  }
-}
 
 // Call once on load
 loadTasksFromDatabase();
@@ -486,8 +486,13 @@ loadTasksFromDatabase();
 // Then update every 1 minute (60000 ms)
 setInterval(() => {
   loadTasksFromDatabase();
-}, 60000);
+}, 30000);
+setInterval(async () => {
+  const tasks = await getTasks();
+  updateBadgeCount(tasks);
+}, 1000);
 document.addEventListener("DOMContentLoaded", function () {
+  // When opening the sidebar for a new task
   const deadlineInput = document.getElementById("task-deadline");
   if (deadlineInput) {
     const now = new Date();

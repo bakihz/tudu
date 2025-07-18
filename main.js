@@ -5,15 +5,39 @@ const {
   nativeImage,
   Tray,
   Menu,
+  Notification,
 } = require("electron");
-const { createCanvas } = require("canvas"); // npm install canvas
+const PImage = require("pureimage");
+const { PassThrough } = require("stream");
 const path = require("path");
 const { poolPromise, sql } = require("./src/utils/db"); // <-- fixed path
 const { startServer } = require("./server.js");
+const AutoLaunch = require("auto-launch");
 
 let win;
 let tray = null;
 let isQuiting = false;
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit(); // Zaten çalışıyorsa çık
+} else {
+  app.on("second-instance", () => {
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.show();
+      win.focus();
+    }
+  });
+}
+
+const tuduAutoLauncher = new AutoLaunch({
+  name: "Tudu",
+  path: app.getPath("exe"),
+});
+
+tuduAutoLauncher.enable();
 
 // --- App Lifecycle ---
 app.on("ready", () => {
@@ -69,12 +93,43 @@ app.on("ready", () => {
     win.show();
   });
 
+  // When hiding to tray, do NOT destroy the window, just hide it
   win.on("close", (event) => {
     if (!isQuiting) {
       event.preventDefault();
       win.hide();
+    } else {
+      win = null; // <--- Add this line to clear the reference when quitting
     }
     return false;
+  });
+  win.on("minimize", (event) => {
+    event.preventDefault();
+    win.hide();
+  });
+  win.on("restore", () => {
+    win.show();
+  });
+  win.on("focus", () => {
+    if (tray) {
+      tray.setHighlightMode("always");
+    }
+  });
+  win.on("blur", () => {
+    if (tray) {
+      tray.setHighlightMode("never");
+    }
+  });
+  win.on("closed", () => {
+    win = null; // Clear the reference when closed
+  });
+  // Ensure the window is focused when clicked
+  win.webContents.on("did-finish-load", () => {
+    win.webContents.executeJavaScript(`
+      document.addEventListener('mousedown', function() {
+        window.focus();
+      });
+    `);
   });
 });
 
@@ -86,23 +141,33 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
+// In your activate event, always check if win is null or destroyed
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    if (!win) {
-      win = new BrowserWindow({
-        width: 800,
-        height: 600,
-        icon: path.join(__dirname, "icon.ico"),
-        webPreferences: {
-          preload: path.join(__dirname, "preload.js"),
-          contextIsolation: true,
-          nodeIntegration: false,
-        },
-      });
-      win.loadFile("./public/login.html");
-    } else {
-      win.show();
-    }
+  if (!win || win.isDestroyed()) {
+    win = new BrowserWindow({
+      width: 800,
+      height: 600,
+      title: "Tudu",
+      icon: path.join(__dirname, "icon.ico"),
+      webPreferences: {
+        preload: path.join(__dirname, "preload.js"),
+        contextIsolation: true,
+        nodeIntegration: false,
+      },
+    });
+    win.loadFile("./public/login.html");
+    // Re-attach your close event handler here if needed
+    win.on("close", (event) => {
+      if (!isQuiting) {
+        event.preventDefault();
+        win.hide();
+      } else {
+        win = null;
+      }
+      return false;
+    });
+  } else {
+    win.show();
   }
 });
 
@@ -259,29 +324,42 @@ ipcMain.handle("get-users", async () => {
     return [];
   }
 });
+ipcMain.on("set-badge-count", async (event, count) => {
+  if (process.platform !== "win32") return;
+  if (!win) return;
+  if (count > 0) {
+    const size = 64;
+    const img = PImage.make(size, size);
+    const ctx = img.getContext("2d");
 
-ipcMain.on("set-badge-count", (event, count) => {
-  if (process.platform === "darwin" || process.platform === "linux") {
-    app.setBadgeCount(count);
-  } else if (process.platform === "win32") {
-    if (count > 0) {
-      const size = 50;
-      const canvas = createCanvas(size, size);
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, size, size);
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
-      ctx.fillStyle = "#007bff"; // Make it blue
-      ctx.fill();
-      ctx.font = "bold 30px Arial";
-      ctx.fillStyle = "#fff";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(count > 99 ? "99+" : count.toString(), size / 2, size / 2);
-      const overlay = nativeImage.createFromDataURL(canvas.toDataURL());
+    ctx.fillStyle = "#007bff";
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "30pt Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(count > 99 ? "99+" : String(count), size / 2, size / 2);
+
+    const stream = new PassThrough();
+    const chunks = [];
+    PImage.encodePNGToStream(img, stream);
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", () => {
+      const buffer = Buffer.concat(chunks);
+      const overlay = nativeImage.createFromBuffer(buffer);
       win.setOverlayIcon(overlay, `${count} pending tasks`);
-    } else {
-      win.setOverlayIcon(null, "");
-    }
+    });
+  } else {
+    win.setOverlayIcon(null, "");
   }
 });
+
+ipcMain.on("show-notification", (event, { title, body }) => {
+  new Notification({ title, body }).show();
+});
+
+// Register Arial or use a bundled TTF font
+PImage.registerFont(path.join(__dirname, "arial.ttf"), "Arial").loadSync();

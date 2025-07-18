@@ -42,13 +42,6 @@ if (closeEditTaskBtn && editTaskSidebar) {
   });
 }
 
-// Navigation handler
-if (goToUserButton) {
-  goToUserButton.addEventListener("click", () => {
-    window.location.href = "user.html";
-  });
-}
-
 const logoutLink = document.getElementById("logout-link");
 if (logoutLink) {
   logoutLink.addEventListener("click", () => {
@@ -62,6 +55,23 @@ const newTodoInput = document.getElementById("new-todo-admin");
 const addTodoButton = document.getElementById("add-todo-admin");
 
 function addTodo() {
+  const deadlineInput = document.getElementById("task-deadline");
+  if (deadlineInput) {
+    const now = new Date();
+    now.setHours(18, 0, 0, 0);
+    const pad = (n) => n.toString().padStart(2, "0");
+    const formatted =
+      now.getFullYear() +
+      "-" +
+      pad(now.getMonth() + 1) +
+      "-" +
+      pad(now.getDate()) +
+      "T" +
+      pad(now.getHours()) +
+      ":" +
+      pad(now.getMinutes());
+    deadlineInput.value = formatted;
+  }
   const text = newTodoInput.value.trim();
   if (!text) return;
 

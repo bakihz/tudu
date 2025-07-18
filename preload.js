@@ -8,4 +8,5 @@ contextBridge.exposeInMainWorld("api", {
   deleteTask: (taskId) => ipcRenderer.invoke("delete-task", taskId),
   getUsers: () => ipcRenderer.invoke("get-users"),
   sendBadgeCount: (count) => ipcRenderer.send("set-badge-count", count),
+  showNotification: (options) => ipcRenderer.send("show-notification", options),
 });
