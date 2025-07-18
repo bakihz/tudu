@@ -24,6 +24,9 @@
       "output": "dist"
     },
     "icon": "./icon.ico",
+    "nsis":{
+      "runAfterFinish": true
+    },
     "win": {
       "target": [
         {

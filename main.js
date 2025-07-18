@@ -32,12 +32,16 @@ if (!gotTheLock) {
   });
 }
 
-const tuduAutoLauncher = new AutoLaunch({
-  name: "Tudu",
-  path: app.getPath("exe"),
-});
+if (app.isPackaged) {
+  app.setLoginItemSettings({
+    openAtLogin: true,
+    path: process.execPath,
+    args: [],
+  });
+}
 
-tuduAutoLauncher.enable();
+const tuduAutoLauncher = new AutoLaunch({ name: "Tudu" });
+tuduAutoLauncher.disable(); // Eski kayıt varsa temizler
 
 // --- App Lifecycle ---
 app.on("ready", () => {
@@ -53,10 +57,10 @@ app.on("ready", () => {
       nodeIntegration: false,
       enableRemoteModule: false,
       sandbox: false,
+      devTools: false,
     },
   });
 
-  // Disable menu bar and prevent Alt key focus loss
   win.setMenuBarVisibility(true);
   win.setAutoHideMenuBar(false);
 
@@ -143,6 +147,7 @@ app.on("activate", () => {
         preload: path.join(__dirname, "preload.js"),
         contextIsolation: true,
         nodeIntegration: false,
+        devTools: false,
       },
     });
     win.loadFile("./public/login.html");
