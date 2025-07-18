@@ -110,16 +110,6 @@ app.on("ready", () => {
   win.on("restore", () => {
     win.show();
   });
-  win.on("focus", () => {
-    if (tray) {
-      tray.setHighlightMode("always");
-    }
-  });
-  win.on("blur", () => {
-    if (tray) {
-      tray.setHighlightMode("never");
-    }
-  });
   win.on("closed", () => {
     win = null; // Clear the reference when closed
   });
