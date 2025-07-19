@@ -1,5 +1,6 @@
 {
   "name": "tudu",
+  "productName": "Tudu",
   "version": "1.0.0",
   "description": "tudu",
   "license": "MIT",
@@ -24,7 +25,7 @@
       "output": "dist"
     },
     "icon": "./icon.ico",
-    "nsis":{
+    "nsis": {
       "runAfterFinish": true
     },
     "win": {

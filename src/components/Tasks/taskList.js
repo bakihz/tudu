@@ -77,7 +77,8 @@ async function loadTasksFromDatabase() {
     // Only notify if app is not focused
     newTasks.forEach((task) => {
       if (Notification.permission === "granted") {
-        new Notification("Yeni Görev Atandı", {
+        window.api.showNotification({
+          title: "Yeni Görev Atandı",
           body: task.TaskName,
         });
       }

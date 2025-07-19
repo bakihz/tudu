@@ -13,6 +13,7 @@ const path = require("path");
 const { poolPromise, sql } = require("./src/utils/db"); // <-- fixed path
 const { startServer } = require("./server.js");
 const AutoLaunch = require("auto-launch");
+const { electron } = require("process");
 
 let win;
 let tray = null;
@@ -101,15 +102,15 @@ app.on("ready", () => {
   win.on("close", (event) => {
     if (!isQuiting) {
       event.preventDefault();
-      win.hide();
+      win.minimize(); // <-- keep minimized, not hidden
     } else {
-      win = null; // <--- Add this line to clear the reference when quitting
+      win = null;
     }
     return false;
   });
   win.on("minimize", (event) => {
     event.preventDefault();
-    win.hide();
+    win.minimize(); // <-- keep minimized, not hidden
   });
   win.on("restore", () => {
     win.show();
@@ -155,7 +156,7 @@ app.on("activate", () => {
     win.on("close", (event) => {
       if (!isQuiting) {
         event.preventDefault();
-        win.hide();
+        win.minimize(); // <-- keep minimized, not hidden
       } else {
         win = null;
       }
@@ -353,7 +354,11 @@ ipcMain.on("set-badge-count", async (event, count) => {
 });
 
 ipcMain.on("show-notification", (event, { title, body }) => {
-  new Notification({ title, body }).show();
+  new Notification({
+    title,
+    body,
+    icon: path.join(__dirname, "icon.ico"),
+  }).show();
 });
 
 // Register Arial or use a bundled TTF font
