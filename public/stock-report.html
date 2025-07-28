@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Stok Raporu Excel Tablosu</title>
+    <style rel="stylesheet"></style>
+  </head>
+  <body>
+    <h2>Stok Raporu Excel Tablosu</h2>
+    <label>SQL Sorgunuz:</label>
+    <textarea id="sql-query" readonly>
+SELECT ITM.CODE AS KOD, ITM.NAME AS AÇIKLAMA, ITM.STGRPCODE AS GRUP,ITM.CYPHCODE AS [Y.KODU],ITM.SPECODE AS [Ö.KOD],ITM.SPECODE2 AS [Ö.KOD-2],ITM.SPECODE3 AS [Ö.KOD-3], ITM.SPECODE4 AS [Ö.KOD-4], ITM.SPECODE5 AS [Ö.KOD-5],
+(SELECT DESCR FROM {MARK} WHERE LOGICALREF=ITM.MARKREF) AS [MARKA],
+A.YEAR_ AS YIL, A.AY,A.MONTH_, 
+(SELECT CODE FROM {UNITSETL} WHERE UNITSETREF=ITM.UNITSETREF AND MAINUNIT=1) AS "A.BİRİM" 
+,A.SATIS, A.ALIM 
+,(SELECT ROUND(ONHAND,2) FROM {GNTOTST} WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "FİİLİ STOK"
+,(SELECT ROUND(ACTSORDER,2) FROM {GNTOTST} WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "BEKLEYEN SİP."
+,(SELECT TOP(1) PRICE FROM {PRCLIST} WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=1) AS "ALIŞ FİY."
+,(SELECT TOP(1) PRICE FROM {PRCLIST} WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=2) AS "SATIŞ FİY."
+FROM {ITEMS} ITM , 
+(SELECT [STOCKREF]
+      ,MONTH_
+      ,CASE MONTH_ 
+WHEN 1 THEN '01-Ocak'
+when 2 then '02-Şubat'
+when 3 then '03-Mart'
+when 4 then '04-Nisan'
+when 5 then '05-Mayıs'
+when 6 then '06-Haziran'
+when 7 then '07-Temmuz'
+when 8 then '08-Ağustos'
+when 9 then '09-Eylül'
+when 10 then '10-Ekim'
+when 11 then '11-Kasım'
+when 12 then '12-Aralık' end AS AY
+      ,SUM([SALES_AMOUNT]) AS SATIS
+      ,SUM([SALES_RETAMNT]) AS SIADE
+      ,SUM([PURCHASES_AMOUNT]) AS ALIM
+      ,SUM([PURCHASES_RETAMNT]) AS AIADE
+      ,[YEAR_]  
+ FROM [{STINVENS}] WHERE MTRLINC<>1 AND INVENNO=-1 
+ GROUP BY STOCKREF, YEAR_,MONTH_ ) AS A
+ WHERE A.STOCKREF=ITM.LOGICALREF
+  </textarea
+    >
+
+    <label>SQL Sonucu (CSV olarak yapıştırın):</label>
+    <textarea
+      id="csv-input"
+      placeholder="Buraya SQL çıktısını CSV olarak yapıştırın..."
+    ></textarea>
+    <button class="btn" onclick="csvToTable()">Tabloya Dönüştür</button>
+    <button class="btn" onclick="exportTableToExcel()">Excel'e Aktar</button>
+
+    <div id="table-container" style="margin-top: 24px"></div>
+
+    <script>
+      function csvToTable() {
+        const csv = document.getElementById("csv-input").value.trim();
+        if (!csv) return;
+        const rows = csv
+          .split("\n")
+          .map((row) =>
+            row.split(";").map((cell) => cell.replace(/^"|"$/g, ""))
+          );
+        let html = "<table><thead><tr>";
+        rows[0].forEach((h) => (html += `<th>${h}</th>`));
+        html += "</tr></thead><tbody>";
+        for (let i = 1; i < rows.length; i++) {
+          html += "<tr>";
+          rows[i].forEach(
+            (cell) => (html += `<td contenteditable="true">${cell}</td>`)
+          );
+          html += "</tr>";
+        }
+        html += "</tbody></table>";
+        document.getElementById("table-container").innerHTML = html;
+      }
+
+      function exportTableToExcel() {
+        const table = document.querySelector("#table-container table");
+        if (!table) return;
+        let csv = "";
+        for (let row of table.rows) {
+          let rowData = [];
+          for (let cell of row.cells) {
+            let text = cell.innerText.replace(/"/g, '""');
+            rowData.push('"' + text + '"');
+          }
+          csv += rowData.join(";") + "\n";
+        }
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "stok-raporu.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
