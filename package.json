@@ -21,6 +21,13 @@
     "files": [
       "**/*"
     ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "bakihz",
+        "repo": "tudu"
+      }
+    ],
     "directories": {
       "output": "dist"
     },
@@ -44,7 +51,8 @@
   "devDependencies": {
     "electron": "^36.1.0",
     "electron-builder": "^26.0.12",
-    "electron-packager": "^17.1.2"
+    "electron-packager": "^17.1.2",
+    "electron-updater": "^6.6.2"
   },
   "dependencies": {
     "auto-launch": "^5.0.6",

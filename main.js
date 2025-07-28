@@ -14,6 +14,7 @@ const { poolPromise, sql } = require("./src/utils/db"); // <-- fixed path
 const { startServer } = require("./server.js");
 const AutoLaunch = require("auto-launch");
 const { electron } = require("process");
+const { autoUpdater } = require("electron-updater");
 
 let win;
 let tray = null;
@@ -46,6 +47,7 @@ tuduAutoLauncher.disable(); // Eski kayıt varsa temizler
 
 // --- App Lifecycle ---
 app.on("ready", () => {
+  autoUpdater.checkForUpdatesAndNotify();
   win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -126,6 +128,10 @@ app.on("ready", () => {
       });
     `);
   });
+});
+
+autoUpdater.on("update-downloaded", () => {
+  autoUpdater.quitAndInstall();
 });
 
 app.on("before-quit", () => {
