@@ -9,6 +9,25 @@ const PORT = 3000;
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
 
+// CORS middleware
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
+// Serve static files
+app.use(express.static("public"));
+app.use("/src", express.static("src"));
+
 // Login endpoint
 app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
@@ -64,6 +83,139 @@ app.post("/api/tasks", async (req, res) => {
     res
       .status(500)
       .json({ message: "An error occurred while fetching tasks." });
+  }
+});
+
+// Stock Report endpoint
+app.post("/api/stock-report", async (req, res) => {
+  const { year = 2025, months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] } =
+    req.body;
+
+  const stockQuery = `
+    SELECT * FROM
+    (
+    SELECT ITM.CODE AS KOD, ITM.NAME AS AÇIKLAMA, ITM.STGRPCODE AS GRUP,ITM.CYPHCODE AS [Y.KODU],ITM.SPECODE AS [Ö.KOD],ITM.SPECODE2 AS [Ö.KOD-2],ITM.SPECODE3 AS [Ö.KOD-3], ITM.SPECODE4 AS [Ö.KOD-4], ITM.SPECODE5 AS [Ö.KOD-5],
+    (SELECT DESCR FROM LG_010_MARK WHERE LOGICALREF=ITM.MARKREF) AS [MARKA],
+    A.YEAR_ AS YIL, A.AY,A.MONTH_, 
+    (SELECT CODE FROM LG_010_UNITSETL WHERE UNITSETREF=ITM.UNITSETREF AND MAINUNIT=1) AS "A.BİRİM" 
+    ,A.SATIS, A.ALIM 
+    ,(SELECT ROUND(ONHAND,2) FROM LV_010_01_GNTOTST WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "FİİLİ STOK"
+    ,(SELECT ROUND(ACTSORDER,2) FROM LV_010_01_GNTOTST WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "BEKLEYEN SİP."
+    ,(SELECT TOP(1) PRICE FROM LG_010_PRCLIST WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=1) AS "ALIŞ FİY."
+    ,(SELECT TOP(1) PRICE FROM LG_010_PRCLIST WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=2) AS "SATIŞ FİY."
+
+    FROM LG_010_ITEMS ITM , 
+    (SELECT [STOCKREF]
+          ,MONTH_
+          ,CASE MONTH_ 
+    WHEN 1 THEN '01-Ocak'
+    when 2 then '02-Şubat'
+    when 3 then '03-Mart'
+    when 4 then '04-Nisan'
+    when 5 then '05-Mayıs'
+    when 6 then '06-Haziran'
+    when 7 then '07-Temmuz'
+    when 8 then '08-Ağustos'
+    when 9 then '09-Eylül'
+    when 10 then '10-Ekim'
+    when 11 then '11-Kasım'
+    when 12 then '12-Aralık' end AS AY
+          ,SUM([SALES_AMOUNT]) AS SATIS
+          ,SUM([SALES_RETAMNT]) AS SIADE
+          ,SUM([PURCHASES_AMOUNT]) AS ALIM
+          ,SUM([PURCHASES_RETAMNT]) AS AIADE
+          ,[YEAR_]  
+     FROM [LV_010_01_STINVENS] WHERE MTRLINC<>1 AND INVENNO=-1 
+     GROUP BY STOCKREF, YEAR_,MONTH_ ) AS A
+     WHERE A.STOCKREF=ITM.LOGICALREF
+    ) AS DYNMQRY
+    WHERE
+    (DYNMQRY.MONTH_ IN (${months.join(",")}))
+    AND (DYNMQRY.[YIL] = @year)
+    ORDER BY DYNMQRY.[KOD] ASC, DYNMQRY.[AÇIKLAMA] ASC, DYNMQRY.[GRUP] ASC, DYNMQRY.[Ö.KOD] ASC, DYNMQRY.[Ö.KOD-2] ASC, DYNMQRY.[Ö.KOD-3] ASC
+  `;
+
+  try {
+    const pool = await poolPromise;
+    const result = await pool
+      .request()
+      .input("year", sql.Int, year)
+      .query(stockQuery);
+
+    res.json({
+      success: true,
+      data: result.recordset,
+      columns: Object.keys(result.recordset[0] || {}),
+      count: result.recordset.length,
+    });
+  } catch (error) {
+    console.error("Stock report query failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Stok raporu alınırken hata oluştu.",
+      error: error.message,
+    });
+  }
+});
+
+// Get all users endpoint (for admin)
+app.get("/api/users", async (req, res) => {
+  try {
+    const pool = await poolPromise;
+    const result = await pool
+      .request()
+      .query("SELECT UserID, UserName, UserType FROM Users ORDER BY UserName");
+
+    res.json({
+      success: true,
+      users: result.recordset,
+    });
+  } catch (error) {
+    console.error("Database query failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Kullanıcılar alınırken hata oluştu.",
+    });
+  }
+});
+
+// Admin change password endpoint
+app.post("/api/admin/change-password", async (req, res) => {
+  const { userId, newPassword } = req.body;
+
+  try {
+    const pool = await poolPromise;
+
+    // Check if the user exists
+    const userCheck = await pool
+      .request()
+      .input("UserID", sql.Int, userId)
+      .query("SELECT UserID, UserName FROM Users WHERE UserID = @UserID");
+
+    if (userCheck.recordset.length === 0) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı." });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password
+    await pool
+      .request()
+      .input("UserID", sql.Int, userId)
+      .input("Password", sql.NVarChar, hashedPassword)
+      .query("UPDATE Users SET Password = @Password WHERE UserID = @UserID");
+
+    res.json({
+      success: true,
+      message: "Şifre başarıyla değiştirildi.",
+    });
+  } catch (error) {
+    console.error("Database query failed:", error);
+    res.status(500).json({
+      success: false,
+      message: "Şifre değiştirilemedi.",
+    });
   }
 });
 
@@ -153,5 +305,8 @@ function startServer() {
     console.log(`Server running on port ${PORT}`);
   });
 }
+
+// Start the server
+startServer();
 
 module.exports = { startServer };

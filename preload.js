@@ -9,4 +9,12 @@ contextBridge.exposeInMainWorld("api", {
   getUsers: () => ipcRenderer.invoke("get-users"),
   sendBadgeCount: (count) => ipcRenderer.send("set-badge-count", count),
   showNotification: (options) => ipcRenderer.send("show-notification", options),
+
+  // Auto-updater API'ları
+  onUpdateAvailable: (callback) => ipcRenderer.on("update-available", callback),
+  onDownloadProgress: (callback) =>
+    ipcRenderer.on("download-progress", callback),
+  onUpdateDownloaded: (callback) =>
+    ipcRenderer.on("update-downloaded", callback),
+  removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
 });

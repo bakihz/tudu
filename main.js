@@ -47,7 +47,16 @@ tuduAutoLauncher.disable(); // Eski kayıt varsa temizler
 
 // --- App Lifecycle ---
 app.on("ready", () => {
-  autoUpdater.checkForUpdatesAndNotify();
+  // Auto updater ayarları
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify();
+    
+    // Her 10 dakikada bir güncelleme kontrol et
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 10 * 60 * 1000); // 10 minutes
+  }
+
   win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -130,8 +139,47 @@ app.on("ready", () => {
   });
 });
 
-autoUpdater.on("update-downloaded", () => {
-  autoUpdater.quitAndInstall();
+// --- Auto Updater Events ---
+autoUpdater.on("checking-for-update", () => {
+  console.log("Güncellemeler kontrol ediliyor...");
+});
+
+autoUpdater.on("update-available", (info) => {
+  console.log("Güncelleme mevcut:", info.version);
+  if (win && !win.isDestroyed()) {
+    win.webContents.send("update-available", info);
+  }
+});
+
+autoUpdater.on("update-not-available", () => {
+  console.log("Güncel sürüm kullanılıyor.");
+});
+
+autoUpdater.on("error", (err) => {
+  console.log("Güncelleme hatası:", err);
+});
+
+autoUpdater.on("download-progress", (progressObj) => {
+  let log_message = "İndirme hızı: " + progressObj.bytesPerSecond;
+  log_message = log_message + " - İndirilen " + progressObj.percent + "%";
+  log_message = log_message + " (" + progressObj.transferred + "/" + progressObj.total + ")";
+  console.log(log_message);
+  
+  if (win && !win.isDestroyed()) {
+    win.webContents.send("download-progress", progressObj);
+  }
+});
+
+autoUpdater.on("update-downloaded", (info) => {
+  console.log("Güncelleme indirildi:", info.version);
+  if (win && !win.isDestroyed()) {
+    win.webContents.send("update-downloaded", info);
+  }
+  
+  // 5 saniye sonra otomatik olarak yeniden başlat
+  setTimeout(() => {
+    autoUpdater.quitAndInstall();
+  }, 5000);
 });
 
 app.on("before-quit", () => {

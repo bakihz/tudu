@@ -3,22 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <title>Stok Raporu Excel Tablosu</title>
-    <style rel="stylesheet"></style>
+    <link rel="stylesheet" href="../src/styles/Reports/StockReport.css" />
   </head>
   <body>
-    <h2>Stok Raporu Excel Tablosu</h2>
-    <label>SQL Sorgunuz:</label>
-    <textarea id="sql-query" readonly>
+    <div class="container">
+      <h2>Stok Raporu Excel Tablosu</h2>
+      
+      <div id="loading">🔄 Veriler yükleniyor...</div>
+      <div id="error-message"></div>
+      
+      <label>SQL Sorgunuz:</label>
+      <textarea id="sql-query" readonly>
+SELECT * FROM
+(
 SELECT ITM.CODE AS KOD, ITM.NAME AS AÇIKLAMA, ITM.STGRPCODE AS GRUP,ITM.CYPHCODE AS [Y.KODU],ITM.SPECODE AS [Ö.KOD],ITM.SPECODE2 AS [Ö.KOD-2],ITM.SPECODE3 AS [Ö.KOD-3], ITM.SPECODE4 AS [Ö.KOD-4], ITM.SPECODE5 AS [Ö.KOD-5],
-(SELECT DESCR FROM {MARK} WHERE LOGICALREF=ITM.MARKREF) AS [MARKA],
+(SELECT DESCR FROM LG_010_MARK WHERE LOGICALREF=ITM.MARKREF) AS [MARKA],
 A.YEAR_ AS YIL, A.AY,A.MONTH_, 
-(SELECT CODE FROM {UNITSETL} WHERE UNITSETREF=ITM.UNITSETREF AND MAINUNIT=1) AS "A.BİRİM" 
+(SELECT CODE FROM LG_010_UNITSETL WHERE UNITSETREF=ITM.UNITSETREF AND MAINUNIT=1) AS "A.BİRİM" 
 ,A.SATIS, A.ALIM 
-,(SELECT ROUND(ONHAND,2) FROM {GNTOTST} WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "FİİLİ STOK"
-,(SELECT ROUND(ACTSORDER,2) FROM {GNTOTST} WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "BEKLEYEN SİP."
-,(SELECT TOP(1) PRICE FROM {PRCLIST} WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=1) AS "ALIŞ FİY."
-,(SELECT TOP(1) PRICE FROM {PRCLIST} WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=2) AS "SATIŞ FİY."
-FROM {ITEMS} ITM , 
+,(SELECT ROUND(ONHAND,2) FROM LV_010_01_GNTOTST WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "FİİLİ STOK"
+,(SELECT ROUND(ACTSORDER,2) FROM LV_010_01_GNTOTST WHERE STOCKREF=ITM.LOGICALREF AND INVENNO=-1) AS "BEKLEYEN SİP."
+,(SELECT TOP(1) PRICE FROM LG_010_PRCLIST WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=1) AS "ALIŞ FİY."
+,(SELECT TOP(1) PRICE FROM LG_010_PRCLIST WHERE CARDREF=ITM.LOGICALREF AND ACTIVE=0 AND PTYPE=2) AS "SATIŞ FİY."
+
+FROM LG_010_ITEMS ITM , 
 (SELECT [STOCKREF]
       ,MONTH_
       ,CASE MONTH_ 
@@ -39,23 +47,133 @@ when 12 then '12-Aralık' end AS AY
       ,SUM([PURCHASES_AMOUNT]) AS ALIM
       ,SUM([PURCHASES_RETAMNT]) AS AIADE
       ,[YEAR_]  
- FROM [{STINVENS}] WHERE MTRLINC<>1 AND INVENNO=-1 
+ FROM [LV_010_01_STINVENS] WHERE MTRLINC<>1 AND INVENNO=-1 
  GROUP BY STOCKREF, YEAR_,MONTH_ ) AS A
  WHERE A.STOCKREF=ITM.LOGICALREF
-  </textarea
-    >
+) AS DYNMQRY
+WHERE
+(DYNMQRY.MONTH_ IN (1,2,3,4,5,6,7,8,9,10,11,12))
+AND (DYNMQRY.[YIL] = 2025)
+ORDER BY DYNMQRY.[KOD] ASC, DYNMQRY.[AÇIKLAMA] ASC, DYNMQRY.[GRUP] ASC, DYNMQRY.[Ö.KOD] ASC, DYNMQRY.[Ö.KOD-2] ASC, DYNMQRY.[Ö.KOD-3] ASC
+      </textarea>
 
-    <label>SQL Sonucu (CSV olarak yapıştırın):</label>
-    <textarea
-      id="csv-input"
-      placeholder="Buraya SQL çıktısını CSV olarak yapıştırın..."
-    ></textarea>
-    <button class="btn" onclick="csvToTable()">Tabloya Dönüştür</button>
-    <button class="btn" onclick="exportTableToExcel()">Excel'e Aktar</button>
+      <div class="btn-group">
+        <button class="btn btn-success" onclick="fetchStockReport()">
+          📊 Database'den Veri Çek
+        </button>
+      </div>
+
+      <label>SQL Sonucu (CSV olarak yapıştırın):</label>
+      <textarea
+        id="csv-input"
+        placeholder="Buraya SQL çıktısını CSV olarak yapıştırın veya yukarıdaki butonu kullanarak database'den otomatik çekin..."
+      ></textarea>
+      
+      <div class="btn-group">
+        <button class="btn" onclick="csvToTable()">Tabloya Dönüştür</button>
+        <button class="btn" onclick="exportTableToExcel()">Excel'e Aktar</button>
+      </div>
 
     <div id="table-container" style="margin-top: 24px"></div>
 
     <script>
+      // Database'den stok raporu verisini çek
+      async function fetchStockReport() {
+        const loadingDiv = document.getElementById('loading');
+        const errorDiv = document.getElementById('error-message');
+        
+        try {
+          // Loading göster
+          if (loadingDiv) loadingDiv.style.display = 'block';
+          if (errorDiv) errorDiv.style.display = 'none';
+
+          const response = await fetch('/api/stock-report', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              year: 2025,
+              months: [1,2,3,4,5,6,7,8,9,10,11,12]
+            })
+          });
+
+          const result = await response.json();
+          
+          if (!response.ok) {
+            throw new Error(result.message || 'Veri çekilirken hata oluştu');
+          }
+
+          if (result.success) {
+            // Veriyi tabloya dönüştür
+            displayDataAsTable(result.data, result.columns);
+            
+            // CSV input alanını da doldur (isteğe bağlı)
+            const csvData = convertToCSV(result.data, result.columns);
+            document.getElementById('csv-input').value = csvData;
+            
+            console.log(`${result.count} kayıt başarıyla yüklendi.`);
+          } else {
+            throw new Error(result.message || 'Beklenmeyen hata');
+          }
+          
+        } catch (error) {
+          console.error('Stok raporu yüklenirken hata:', error);
+          if (errorDiv) {
+            errorDiv.textContent = `Hata: ${error.message}`;
+            errorDiv.style.display = 'block';
+          } else {
+            alert('Stok raporu yüklenirken hata oluştu: ' + error.message);
+          }
+        } finally {
+          // Loading gizle
+          if (loadingDiv) loadingDiv.style.display = 'none';
+        }
+      }
+
+      // Veriyi tablo olarak göster
+      function displayDataAsTable(data, columns) {
+        if (!data || data.length === 0) {
+          document.getElementById('table-container').innerHTML = '<p>Veri bulunamadı.</p>';
+          return;
+        }
+
+        let html = '<table><thead><tr>';
+        columns.forEach(col => {
+          html += `<th>${col}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+
+        data.forEach(row => {
+          html += '<tr>';
+          columns.forEach(col => {
+            const value = row[col] !== null && row[col] !== undefined ? row[col] : '';
+            html += `<td contenteditable="true">${value}</td>`;
+          });
+          html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        document.getElementById('table-container').innerHTML = html;
+      }
+
+      // JSON verisini CSV formatına çevir
+      function convertToCSV(data, columns) {
+        if (!data || data.length === 0) return '';
+        
+        let csv = columns.map(col => `"${col}"`).join(';') + '\n';
+        
+        data.forEach(row => {
+          const values = columns.map(col => {
+            const value = row[col] !== null && row[col] !== undefined ? row[col] : '';
+            return `"${String(value).replace(/"/g, '""')}"`;
+          });
+          csv += values.join(';') + '\n';
+        });
+        
+        return csv;
+      }
+
       function csvToTable() {
         const csv = document.getElementById("csv-input").value.trim();
         if (!csv) return;
@@ -101,5 +219,6 @@ when 12 then '12-Aralık' end AS AY
         URL.revokeObjectURL(url);
       }
     </script>
+
   </body>
 </html>

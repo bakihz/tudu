@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Ayarları - Kullanıcı Şifre Yönetimi</title>
+    <link rel="stylesheet" href="../src/styles/Settings/AdminSettings.css" />
+  </head>
+  <body>
+    <div class="admin-container">
+      <div class="page-header">
+        <h1>🔐 Admin Ayarları - Kullanıcı Şifre Yönetimi</h1>
+        <p>Sistemdeki tüm kullanıcıların şifrelerini değiştirebilirsiniz</p>
+      </div>
+
+      <div id="alert-container"></div>
+      <div id="loading" class="loading">🔄 Veriler yükleniyor...</div>
+
+      <div class="users-section">
+        <div class="section-title">👥 Kullanıcı Listesi</div>
+        <div id="users-list" class="users-list">
+          <!-- Kullanıcılar buraya yüklenecek -->
+        </div>
+      </div>
+    </div>
+
+    <script src="../src/components/Settings/AdminSettings.js"></script>
+  </body>
+</html>
