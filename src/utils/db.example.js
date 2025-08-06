@@ -2,10 +2,10 @@ const sql = require("mssql");
 
 // Database configuration
 const config = {
-  user: "tudu", // Replace with your SQL Server username
-  password: "Yakamoz57", // Replace with your SQL Server password
-  server: "192.168.5.11", // Replace with your SQL Server hostname or IP
-  database: "tuduDB", // Replace with your database name
+  user: "your_username", // Replace with your SQL Server username
+  password: "your_password", // Replace with your SQL Server password
+  server: "your_server_ip", // Replace with your SQL Server hostname or IP
+  database: "your_database", // Replace with your database name
   port: 1433, // Default SQL Server port
   options: {
     encrypt: false, // Use encryption if required
