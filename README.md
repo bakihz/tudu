@@ -5,28 +5,34 @@ Electron tabanlı görev yönetim uygulaması.
 ## Kurulum
 
 1. Repoyu klonlayın:
+
 ```bash
 git clone https://github.com/bakihz/tudu.git
 cd tudu
 ```
 
 2. Bağımlılıkları yükleyin:
+
 ```bash
 npm install
 ```
 
-3. Veritabanı konfigürasyonunu ayarlayın:
+3. Environment dosyasını oluşturun:
+
 ```bash
-cp src/utils/db.example.js src/utils/db.js
+cp .env.example .env
 ```
 
-4. `src/utils/db.js` dosyasındaki veritabanı bilgilerini kendi ayarlarınızla güncelleyin:
-   - `user`: SQL Server kullanıcı adınız
-   - `password`: SQL Server şifreniz
-   - `server`: SQL Server sunucu IP'si
-   - `database`: Veritabanı adınız
+4. `.env` dosyasındaki ayarları kendi konfigürasyonunuzla güncelleyin:
+
+   - `DB_HOST`: SQL Server sunucu IP'si
+   - `DB_USER`: SQL Server kullanıcı adınız
+   - `DB_PASS`: SQL Server şifreniz
+   - `DB_NAME`: Veritabanı adınız
+   - `PORT`: Uygulama portu (varsayılan: 3000)
 
 5. Uygulamayı çalıştırın:
+
 ```bash
 npm start
 ```
@@ -34,6 +40,7 @@ npm start
 ## Build
 
 Production için build almak:
+
 ```bash
 npm run dist
 ```
@@ -49,4 +56,9 @@ npm run dist
 
 ## Güvenlik
 
-⚠️ **Önemli**: `src/utils/db.js` dosyası veritabanı giriş bilgilerini içerir ve Git'e dahil edilmemiştir. Bu dosyayı manuel olarak oluşturmanız gerekir.
+⚠️ **Önemli**: 
+- `.env` dosyası hassas bilgiler içerir ve Git'e dahil edilmemiştir
+- `src/utils/db.js` dosyası artık environment variable'ları kullanır
+- Loglama sistemi `logs/` klasörüne kayıt tutar (Git'e dahil değil)
+- Rate limiting ve güvenlik header'ları aktif
+- Şifreler bcrypt ile hashlenmiştir
