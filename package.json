@@ -23,6 +23,9 @@
     "files": [
       "**/*"
     ],
+    "asarUnpack": [
+      "node_modules/electron-updater/**/*"
+    ],
     "publish": [
       {
         "provider": "github",

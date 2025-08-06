@@ -14,8 +14,18 @@ const { poolPromise, sql } = require("./src/utils/db"); // <-- fixed path
 const { startServer } = require("./server.js");
 const AutoLaunch = require("auto-launch");
 const { electron } = require("process");
-const { autoUpdater } = require("electron-updater");
-const logger = require('./src/utils/logger');
+
+// Auto-updater'ı try-catch ile yükle
+let autoUpdater = null;
+let logger = null;
+try {
+  autoUpdater = require("electron-updater").autoUpdater;
+  logger = require("./src/utils/logger");
+  console.log("Auto-updater başarıyla yüklendi");
+} catch (error) {
+  console.warn("Auto-updater yüklenemedi (normal bir durum):", error.message);
+  // Auto-updater olmadan da uygulama çalışabilir
+}
 
 let win;
 let tray = null;
@@ -48,27 +58,38 @@ tuduAutoLauncher.disable(); // Eski kayıt varsa temizler
 
 // --- App Lifecycle ---
 app.on("ready", () => {
-  // Auto updater ayarları
-  if (app.isPackaged) {
-    // Auto updater konfigürasyonu
-    autoUpdater.logger = logger;
-    autoUpdater.autoDownload = false; // Manuel kontrol
-    autoUpdater.autoInstallOnAppQuit = false;
-    
-    // Development test için
-    if (process.env.NODE_ENV === 'development') {
-      autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml');
+  // Auto updater ayarları - sadece paketlenmiş uygulamada ve modül yüklendiyse
+  if (app.isPackaged && autoUpdater && logger) {
+    try {
+      // Auto updater konfigürasyonu
+      autoUpdater.logger = logger;
+      autoUpdater.autoDownload = false; // Manuel kontrol
+      autoUpdater.autoInstallOnAppQuit = false;
+
+      // Development test için
+      if (process.env.NODE_ENV === "development") {
+        autoUpdater.updateConfigPath = path.join(
+          __dirname,
+          "dev-app-update.yml"
+        );
+      }
+
+      // Güncelleme kontrolü - uygulama başladığında bir kez
+      setTimeout(() => {
+        autoUpdater.checkForUpdatesAndNotify();
+      }, 3000); // 3 saniye bekle
+
+      // Her 30 dakikada bir güncelleme kontrol et
+      setInterval(() => {
+        autoUpdater.checkForUpdatesAndNotify();
+      }, 30 * 60 * 1000); // 30 minutes
+
+      console.log("Auto-updater başlatıldı");
+    } catch (error) {
+      console.error("Auto-updater başlatılırken hata:", error);
     }
-    
-    // Güncelleme kontrolü - uygulama başladığında bir kez
-    setTimeout(() => {
-      autoUpdater.checkForUpdatesAndNotify();
-    }, 3000); // 3 saniye bekle
-    
-    // Her 30 dakikada bir güncelleme kontrol et (10 dakika çok sık)
-    setInterval(() => {
-      autoUpdater.checkForUpdatesAndNotify();
-    }, 30 * 60 * 1000); // 30 minutes
+  } else {
+    console.log("Auto-updater atlandı (development mode veya modül yok)");
   }
 
   win = new BrowserWindow({
@@ -154,70 +175,80 @@ app.on("ready", () => {
 });
 
 // --- Auto Updater Events ---
-autoUpdater.on("checking-for-update", () => {
-  logger.info("Güncellemeler kontrol ediliyor...");
-  console.log("Güncellemeler kontrol ediliyor...");
-});
+if (autoUpdater && logger) {
+  autoUpdater.on("checking-for-update", () => {
+    logger.info("Güncellemeler kontrol ediliyor...");
+    console.log("Güncellemeler kontrol ediliyor...");
+  });
 
-autoUpdater.on("update-available", (info) => {
-  logger.info("Güncelleme mevcut:", info.version);
-  console.log("Güncelleme mevcut:", info.version);
-  
-  // Manuel indirme başlat
-  autoUpdater.downloadUpdate();
-  
-  if (win && !win.isDestroyed()) {
-    win.webContents.send("update-available", info);
-  }
-});
+  autoUpdater.on("update-available", (info) => {
+    logger.info("Güncelleme mevcut:", info.version);
+    console.log("Güncelleme mevcut:", info.version);
 
-autoUpdater.on("update-not-available", (info) => {
-  logger.info("Güncel sürüm kullanılıyor:", info.version);
-  console.log("Güncel sürüm kullanılıyor:", info.version);
-});
+    // Manuel indirme başlat
+    autoUpdater.downloadUpdate();
 
-autoUpdater.on("error", (err) => {
-  logger.error("Güncelleme hatası:", err);
-  console.error("Güncelleme hatası:", err);
-  
-  if (win && !win.isDestroyed()) {
-    win.webContents.send("update-error", err.message);
-  }
-});
+    if (win && !win.isDestroyed()) {
+      win.webContents.send("update-available", info);
+    }
+  });
 
-autoUpdater.on("download-progress", (progressObj) => {
-  let log_message = "İndirme hızı: " + progressObj.bytesPerSecond;
-  log_message = log_message + " - İndirilen " + progressObj.percent + "%";
-  log_message = log_message + " (" + progressObj.transferred + "/" + progressObj.total + ")";
-  
-  logger.info(log_message);
-  console.log(log_message);
-  
-  if (win && !win.isDestroyed()) {
-    win.webContents.send("download-progress", progressObj);
-  }
-});
+  autoUpdater.on("update-not-available", (info) => {
+    logger.info("Güncel sürüm kullanılıyor:", info.version);
+    console.log("Güncel sürüm kullanılıyor:", info.version);
+  });
 
-autoUpdater.on("update-downloaded", (info) => {
-  logger.info("Güncelleme indirildi:", info.version);
-  console.log("Güncelleme indirildi:", info.version);
-  
-  if (win && !win.isDestroyed()) {
-    win.webContents.send("update-downloaded", info);
-    
-    // Kullanıcıya bildirim göster
-    new Notification({
-      title: "Güncelleme Hazır",
-      body: `Tudu v${info.version} indirildi. 10 saniye içinde yeniden başlatılacak.`,
-      icon: path.join(__dirname, "icon.ico"),
-    }).show();
-  }
-  
-  // 10 saniye sonra otomatik olarak yeniden başlat
-  setTimeout(() => {
-    autoUpdater.quitAndInstall(false, true);
-  }, 10000);
-});
+  autoUpdater.on("error", (err) => {
+    logger.error("Güncelleme hatası:", err);
+    console.error("Güncelleme hatası:", err);
+
+    if (win && !win.isDestroyed()) {
+      win.webContents.send("update-error", err.message);
+    }
+  });
+
+  autoUpdater.on("download-progress", (progressObj) => {
+    let log_message = "İndirme hızı: " + progressObj.bytesPerSecond;
+    log_message = log_message + " - İndirilen " + progressObj.percent + "%";
+    log_message =
+      log_message +
+      " (" +
+      progressObj.transferred +
+      "/" +
+      progressObj.total +
+      ")";
+
+    logger.info(log_message);
+    console.log(log_message);
+
+    if (win && !win.isDestroyed()) {
+      win.webContents.send("download-progress", progressObj);
+    }
+  });
+
+  autoUpdater.on("update-downloaded", (info) => {
+    logger.info("Güncelleme indirildi:", info.version);
+    console.log("Güncelleme indirildi:", info.version);
+
+    if (win && !win.isDestroyed()) {
+      win.webContents.send("update-downloaded", info);
+
+      // Kullanıcıya bildirim göster
+      new Notification({
+        title: "Güncelleme Hazır",
+        body: `Tudu v${info.version} indirildi. 10 saniye içinde yeniden başlatılacak.`,
+        icon: path.join(__dirname, "icon.ico"),
+      }).show();
+    }
+
+    // 10 saniye sonra otomatik olarak yeniden başlat
+    setTimeout(() => {
+      autoUpdater.quitAndInstall(false, true);
+    }, 10000);
+  });
+} else {
+  console.log("Auto-updater event handlers atlandı");
+}
 
 app.on("before-quit", () => {
   isQuiting = true;
@@ -457,17 +488,24 @@ PImage.registerFont(path.join(__dirname, "arial.ttf"), "Arial").loadSync();
 
 // --- Manual Update IPC Handlers ---
 ipcMain.handle("check-for-updates", async () => {
-  if (app.isPackaged) {
+  if (app.isPackaged && autoUpdater) {
     try {
       return await autoUpdater.checkForUpdatesAndNotify();
     } catch (error) {
-      logger.error("Manuel güncelleme kontrolü hatası:", error);
+      if (logger) logger.error("Manuel güncelleme kontrolü hatası:", error);
       return { error: error.message };
     }
   }
-  return { error: "Development modda güncelleme kontrolü yapılamaz" };
+  return {
+    error:
+      "Development modda güncelleme kontrolü yapılamaz veya auto-updater yok",
+  };
 });
 
 ipcMain.handle("install-update", () => {
-  autoUpdater.quitAndInstall(false, true);
+  if (autoUpdater) {
+    autoUpdater.quitAndInstall(false, true);
+  } else {
+    console.log("Auto-updater mevcut değil");
+  }
 });
