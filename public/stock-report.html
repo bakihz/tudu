@@ -7,6 +7,16 @@
   </head>
   <body>
     <div class="container">
+      <!-- Go Back Navigation -->
+      <div class="navigation-header">
+        <button class="btn btn-back" onclick="goBack()">
+          ← Geri Dön
+        </button>
+        <button class="btn btn-home" onclick="goHome()">
+          🏠 Ana Menü
+        </button>
+      </div>
+      
       <h2>Stok Raporu Excel Tablosu</h2>
       
       <div id="loading">🔄 Veriler yükleniyor...</div>
@@ -218,7 +228,59 @@ ORDER BY DYNMQRY.[KOD] ASC, DYNMQRY.[AÇIKLAMA] ASC, DYNMQRY.[GRUP] ASC, DYNMQRY
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }
+
+      // Navigation functions
+      function goBack() {
+        // Check if there's a previous page in history
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          // If no history, go to tasks page (main menu)
+          window.location.href = 'tasks.html';
+        }
+      }
+
+      function goHome() {
+        // Go to main tasks page
+        window.location.href = 'tasks.html';
+      }
     </script>
+
+    <style>
+      .navigation-header {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .btn-back, .btn-home {
+        padding: 8px 16px;
+        border: 1px solid #007bff;
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .btn-back:hover, .btn-home:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+
+      .btn-home {
+        background-color: #28a745;
+        border-color: #28a745;
+      }
+
+      .btn-home:hover {
+        background-color: #1e7e34;
+        border-color: #1e7e34;
+      }
+    </style>
 
   </body>
 </html>
