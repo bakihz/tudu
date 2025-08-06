@@ -1,10 +1,10 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const { poolPromise, sql } = require("./src/utils/db"); // Import the database connection
 const bcrypt = require("bcryptjs");
-const logger = require('./src/utils/logger');
+const logger = require("./src/utils/logger");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,17 +34,17 @@ app.use(bodyParser.json());
 // Security middleware
 app.use((req, res, next) => {
   // Security headers
-  res.header('X-Content-Type-Options', 'nosniff');
-  res.header('X-Frame-Options', 'DENY');
-  res.header('X-XSS-Protection', '1; mode=block');
-  res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+  res.header("X-Content-Type-Options", "nosniff");
+  res.header("X-Frame-Options", "DENY");
+  res.header("X-XSS-Protection", "1; mode=block");
+  res.header("Referrer-Policy", "strict-origin-when-cross-origin");
+
   // CSP header for development
   res.header(
-    'Content-Security-Policy',
+    "Content-Security-Policy",
     "default-src 'self'; connect-src 'self' http://localhost:* ws://localhost:*; script-src 'self' 'unsafe-eval'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:"
   );
-  
+
   next();
 });
 

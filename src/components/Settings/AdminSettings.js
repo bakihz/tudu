@@ -1,7 +1,8 @@
 // API Base URL
-const API_BASE_URL = window.location.protocol === 'file:' 
-  ? 'http://localhost:3000' 
-  : `${window.location.protocol}//${window.location.hostname}:3000`;
+const API_BASE_URL =
+  window.location.protocol === "file:"
+    ? "http://localhost:3000"
+    : `${window.location.protocol}//${window.location.hostname}:3000`;
 
 // Sayfa yüklendiğinde kullanıcıları getir
 document.addEventListener("DOMContentLoaded", function () {
@@ -192,19 +193,16 @@ async function changePassword(event, userId, userName) {
   }
 
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/admin/change-password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: userId,
-          newPassword: newPassword,
-        }),
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: userId,
+        newPassword: newPassword,
+      }),
+    });
 
     const result = await response.json();
 
