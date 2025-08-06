@@ -7,6 +7,7 @@ const API_BASE_URL =
 // Sayfa yüklendiğinde kullanıcıları getir
 document.addEventListener("DOMContentLoaded", function () {
   loadUsers();
+  setupUpdateListeners();
 });
 
 // Kullanıcıları yükle
@@ -246,4 +247,127 @@ function showAlert(message, type) {
 function clearAlerts() {
   const alertContainer = document.getElementById("alert-container");
   alertContainer.innerHTML = "";
+}
+
+// === Güncelleme İşlevleri ===
+
+// Güncelleme dinleyicilerini kur
+function setupUpdateListeners() {
+  // Güncellemeleri kontrol et butonu
+  document
+    .getElementById("check-updates-btn")
+    .addEventListener("click", checkForUpdates);
+
+  // Güncellemeyi yükle butonu
+  document
+    .getElementById("install-update-btn")
+    .addEventListener("click", installUpdate);
+
+  // Auto-updater event listeners
+  if (window.api) {
+    window.api.onUpdateAvailable((event, info) => {
+      updateStatus(`🎉 Yeni güncelleme mevcut: v${info.version}`, "available");
+      document.getElementById("install-update-btn").style.display = "block";
+    });
+
+    window.api.onDownloadProgress((event, progressObj) => {
+      const percent = Math.round(progressObj.percent);
+      updateProgress(percent);
+      updateStatus(`📥 İndiriliyor: ${percent}%`, "checking");
+    });
+
+    window.api.onUpdateDownloaded((event, info) => {
+      updateStatus(
+        `✅ Güncelleme indirildi: v${info.version}. 10 saniye içinde yeniden başlatılacak.`,
+        "available"
+      );
+      hideProgress();
+
+      // Install butonu yerine otomatik yeniden başlatma mesajı
+      document.getElementById("install-update-btn").style.display = "none";
+    });
+
+    window.api.onUpdateError((event, error) => {
+      updateStatus(`❌ Güncelleme hatası: ${error}`, "error");
+      hideProgress();
+      document.getElementById("install-update-btn").style.display = "none";
+    });
+  }
+}
+
+// Güncellemeleri kontrol et
+async function checkForUpdates() {
+  const btn = document.getElementById("check-updates-btn");
+
+  try {
+    btn.disabled = true;
+    btn.textContent = "Kontrol Ediliyor...";
+    updateStatus("🔍 Güncellemeler kontrol ediliyor...", "checking");
+
+    if (window.api && window.api.checkForUpdates) {
+      const result = await window.api.checkForUpdates();
+
+      if (result.updateAvailable) {
+        updateStatus(
+          `🎉 Yeni güncelleme mevcut: v${result.version}`,
+          "available"
+        );
+        document.getElementById("install-update-btn").style.display = "block";
+      } else {
+        updateStatus("✅ Uygulamanız güncel!", "not-available");
+        document.getElementById("install-update-btn").style.display = "none";
+      }
+    } else {
+      updateStatus("⚠️ Güncelleme sistemi kullanılamıyor", "error");
+    }
+  } catch (error) {
+    console.error("Güncelleme kontrol hatası:", error);
+    updateStatus(`❌ Hata: ${error.message}`, "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Güncellemeleri Kontrol Et";
+  }
+}
+
+// Güncellemeyi yükle
+async function installUpdate() {
+  try {
+    updateStatus("📥 Güncelleme indiriliyor...", "checking");
+    showProgress();
+
+    if (window.api && window.api.installUpdate) {
+      await window.api.installUpdate();
+      // Bu noktadan sonra uygulama yeniden başlayacak
+    } else {
+      throw new Error("Güncelleme yükleme sistemi kullanılamıyor");
+    }
+  } catch (error) {
+    console.error("Güncelleme yükleme hatası:", error);
+    updateStatus(`❌ Güncelleme yüklenemedi: ${error.message}`, "error");
+    hideProgress();
+  }
+}
+
+// Güncelleme durumunu güncelle
+function updateStatus(message, type) {
+  const statusDiv = document.getElementById("update-status");
+  statusDiv.textContent = message;
+  statusDiv.className = `update-status ${type}`;
+}
+
+// İlerleme çubuğunu göster
+function showProgress() {
+  document.getElementById("update-progress").style.display = "block";
+}
+
+// İlerleme çubuğunu gizle
+function hideProgress() {
+  document.getElementById("update-progress").style.display = "none";
+  updateProgress(0);
+}
+
+// İlerleme çubuğunu güncelle
+function updateProgress(percent) {
+  document.getElementById("progress-fill").style.width = `${percent}%`;
+  document.getElementById("progress-text").textContent = `${percent}%`;
 }

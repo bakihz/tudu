@@ -197,3 +197,70 @@
 .strength-strong {
   background-color: #28a745;
 }
+
+.update-section {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f8f9fa;
+}
+
+.update-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.update-status {
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  min-height: 20px;
+}
+
+.update-status.checking {
+  background-color: #cce7ff;
+  color: #004085;
+}
+
+.update-status.available {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.update-status.not-available {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.update-status.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.update-progress {
+  margin-top: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #007bff;
+  transition: width 0.3s;
+  width: 0%;
+}
+
+.progress-text {
+  text-align: center;
+  color: #495057;
+  font-size: 14px;
+}

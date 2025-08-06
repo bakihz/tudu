@@ -22,6 +22,33 @@
           <!-- Kullanıcılar buraya yüklenecek -->
         </div>
       </div>
+
+      <div class="update-section">
+        <div class="section-title">🔄 Uygulama Güncellemeleri</div>
+        <div class="update-controls">
+          <button id="check-updates-btn" class="btn btn-primary">
+            Güncellemeleri Kontrol Et
+          </button>
+          <button
+            id="install-update-btn"
+            class="btn btn-success"
+            style="display: none"
+          >
+            Güncellemeyi Yükle ve Yeniden Başlat
+          </button>
+          <div id="update-status" class="update-status"></div>
+          <div
+            id="update-progress"
+            class="update-progress"
+            style="display: none"
+          >
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="progress-text" class="progress-text">0%</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="../src/components/Settings/AdminSettings.js"></script>

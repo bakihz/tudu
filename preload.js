@@ -11,10 +11,13 @@ contextBridge.exposeInMainWorld("api", {
   showNotification: (options) => ipcRenderer.send("show-notification", options),
 
   // Auto-updater API'ları
+  checkForUpdates: () => ipcRenderer.invoke("check-for-updates"),
+  installUpdate: () => ipcRenderer.invoke("install-update"),
   onUpdateAvailable: (callback) => ipcRenderer.on("update-available", callback),
   onDownloadProgress: (callback) =>
     ipcRenderer.on("download-progress", callback),
   onUpdateDownloaded: (callback) =>
     ipcRenderer.on("update-downloaded", callback),
+  onUpdateError: (callback) => ipcRenderer.on("update-error", callback),
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
 });

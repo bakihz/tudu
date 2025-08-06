@@ -76,13 +76,15 @@ app.on("ready", () => {
 
       // Güncelleme kontrolü - uygulama başladığında bir kez
       setTimeout(() => {
+        console.log("İlk güncelleme kontrolü başlatılıyor...");
         autoUpdater.checkForUpdatesAndNotify();
       }, 3000); // 3 saniye bekle
 
-      // Her 30 dakikada bir güncelleme kontrol et
+      // Her 5 dakikada bir güncelleme kontrol et (test için)
       setInterval(() => {
+        console.log("Periyodik güncelleme kontrolü...");
         autoUpdater.checkForUpdatesAndNotify();
-      }, 30 * 60 * 1000); // 30 minutes
+      }, 5 * 60 * 1000); // 5 minutes
 
       console.log("Auto-updater başlatıldı");
     } catch (error) {
