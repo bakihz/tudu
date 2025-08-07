@@ -75,14 +75,14 @@ app.on("ready", () => {
       // Güncelleme kontrolü - uygulama başladığında bir kez
       setTimeout(() => {
         console.log("İlk güncelleme kontrolü başlatılıyor...");
-        console.log("Mevcut versiyon:", require('./package.json').version);
+        console.log("Mevcut versiyon:", require("./package.json").version);
         autoUpdater.checkForUpdatesAndNotify();
       }, 3000); // 3 saniye bekle
 
       // Her 2 dakikada bir güncelleme kontrol et (test için)
       setInterval(() => {
         console.log("Periyodik güncelleme kontrolü...");
-        console.log("Mevcut versiyon:", require('./package.json').version);
+        console.log("Mevcut versiyon:", require("./package.json").version);
         autoUpdater.checkForUpdatesAndNotify();
       }, 2 * 60 * 1000); // 2 minutes
 
@@ -114,11 +114,11 @@ app.on("ready", () => {
   win.setAutoHideMenuBar(false);
 
   // Developer Tools için kısayol ekle
-  win.webContents.on('before-input-event', (event, input) => {
-    if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+  win.webContents.on("before-input-event", (event, input) => {
+    if (input.control && input.shift && input.key.toLowerCase() === "i") {
       win.webContents.toggleDevTools();
     }
-    if (input.key === 'F12') {
+    if (input.key === "F12") {
       win.webContents.toggleDevTools();
     }
   });
@@ -506,10 +506,10 @@ ipcMain.handle("check-for-updates", async () => {
   console.log("🔍 Manuel güncelleme kontrolü başlatılıyor...");
   console.log("📋 isPackaged:", app.isPackaged);
   console.log("📋 autoUpdater exists:", !!autoUpdater);
-  
+
   if (autoUpdater) {
     try {
-      console.log("📋 Mevcut versiyon:", require('./package.json').version);
+      console.log("📋 Mevcut versiyon:", require("./package.json").version);
       const result = await autoUpdater.checkForUpdatesAndNotify();
       console.log("📋 Check result:", JSON.stringify(result, null, 2));
       return result;
