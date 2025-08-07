@@ -55,6 +55,12 @@
           </div>
         </div>
       </div>
+
+      <!-- Version Info Footer -->
+      <div class="version-footer">
+        <span id="version-info">Tudu v1.0.9</span>
+        <span class="version-date">© 2025 Bakihz</span>
+      </div>
     </div>
 
     <script src="../src/components/Settings/AdminSettings.js"></script>
@@ -112,6 +118,30 @@
       .btn-home:hover {
         background-color: #1e7e34;
         border-color: #1e7e34;
+      }
+
+      .version-footer {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 12px;
+        color: #666;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        z-index: 1000;
+      }
+
+      .version-footer span {
+        display: block;
+        text-align: right;
+      }
+
+      .version-date {
+        font-size: 10px;
+        color: #999;
+        margin-top: 2px;
       }
     </style>
   </body>

@@ -58,33 +58,33 @@ tuduAutoLauncher.disable(); // Eski kayıt varsa temizler
 
 // --- App Lifecycle ---
 app.on("ready", () => {
-  // Auto updater ayarları - sadece paketlenmiş uygulamada ve modül yüklendiyse
-  if (app.isPackaged && autoUpdater && logger) {
+  // Auto updater ayarları - hem paketlenmiş hem development modda test için
+  if (autoUpdater && logger) {
     try {
       // Auto updater konfigürasyonu
       autoUpdater.logger = logger;
       autoUpdater.autoDownload = false; // Manuel kontrol
       autoUpdater.autoInstallOnAppQuit = false;
 
-      // Development test için
-      if (process.env.NODE_ENV === "development") {
-        autoUpdater.updateConfigPath = path.join(
-          __dirname,
-          "dev-app-update.yml"
-        );
+      // Development test için - force enable for testing
+      if (process.env.NODE_ENV === "development" || !app.isPackaged) {
+        console.log("Development mode: Auto-updater etkinleştiriliyor...");
+        // Development'ta da çalışması için force enable
       }
 
       // Güncelleme kontrolü - uygulama başladığında bir kez
       setTimeout(() => {
         console.log("İlk güncelleme kontrolü başlatılıyor...");
+        console.log("Mevcut versiyon:", require('./package.json').version);
         autoUpdater.checkForUpdatesAndNotify();
       }, 3000); // 3 saniye bekle
 
-      // Her 5 dakikada bir güncelleme kontrol et (test için)
+      // Her 2 dakikada bir güncelleme kontrol et (test için)
       setInterval(() => {
         console.log("Periyodik güncelleme kontrolü...");
+        console.log("Mevcut versiyon:", require('./package.json').version);
         autoUpdater.checkForUpdatesAndNotify();
-      }, 5 * 60 * 1000); // 5 minutes
+      }, 2 * 60 * 1000); // 2 minutes
 
       console.log("Auto-updater başlatıldı");
     } catch (error) {
@@ -106,12 +106,22 @@ app.on("ready", () => {
       nodeIntegration: false,
       enableRemoteModule: false,
       sandbox: false,
-      devTools: false,
+      devTools: true,
     },
   });
 
   win.setMenuBarVisibility(true);
   win.setAutoHideMenuBar(false);
+
+  // Developer Tools için kısayol ekle
+  win.webContents.on('before-input-event', (event, input) => {
+    if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+      win.webContents.toggleDevTools();
+    }
+    if (input.key === 'F12') {
+      win.webContents.toggleDevTools();
+    }
+  });
 
   win.maximize();
   win.loadFile("./public/login.html");
@@ -180,12 +190,13 @@ app.on("ready", () => {
 if (autoUpdater && logger) {
   autoUpdater.on("checking-for-update", () => {
     logger.info("Güncellemeler kontrol ediliyor...");
-    console.log("Güncellemeler kontrol ediliyor...");
+    console.log("🔍 Güncellemeler kontrol ediliyor...");
   });
 
   autoUpdater.on("update-available", (info) => {
     logger.info("Güncelleme mevcut:", info.version);
-    console.log("Güncelleme mevcut:", info.version);
+    console.log("🎉 Güncelleme mevcut! Yeni versiyon:", info.version);
+    console.log("📋 Update info:", JSON.stringify(info, null, 2));
 
     // Manuel indirme başlat
     autoUpdater.downloadUpdate();
@@ -197,12 +208,14 @@ if (autoUpdater && logger) {
 
   autoUpdater.on("update-not-available", (info) => {
     logger.info("Güncel sürüm kullanılıyor:", info.version);
-    console.log("Güncel sürüm kullanılıyor:", info.version);
+    console.log("✅ Güncel sürüm kullanılıyor:", info.version);
+    console.log("📋 Current info:", JSON.stringify(info, null, 2));
   });
 
   autoUpdater.on("error", (err) => {
     logger.error("Güncelleme hatası:", err);
-    console.error("Güncelleme hatası:", err);
+    console.error("❌ Güncelleme hatası:", err);
+    console.error("📋 Error details:", JSON.stringify(err, null, 2));
 
     if (win && !win.isDestroyed()) {
       win.webContents.send("update-error", err.message);
@@ -272,7 +285,7 @@ app.on("activate", () => {
         preload: path.join(__dirname, "preload.js"),
         contextIsolation: true,
         nodeIntegration: false,
-        devTools: false,
+        devTools: true,
       },
     });
     win.loadFile("./public/login.html");
@@ -490,17 +503,24 @@ PImage.registerFont(path.join(__dirname, "arial.ttf"), "Arial").loadSync();
 
 // --- Manual Update IPC Handlers ---
 ipcMain.handle("check-for-updates", async () => {
-  if (app.isPackaged && autoUpdater) {
+  console.log("🔍 Manuel güncelleme kontrolü başlatılıyor...");
+  console.log("📋 isPackaged:", app.isPackaged);
+  console.log("📋 autoUpdater exists:", !!autoUpdater);
+  
+  if (autoUpdater) {
     try {
-      return await autoUpdater.checkForUpdatesAndNotify();
+      console.log("📋 Mevcut versiyon:", require('./package.json').version);
+      const result = await autoUpdater.checkForUpdatesAndNotify();
+      console.log("📋 Check result:", JSON.stringify(result, null, 2));
+      return result;
     } catch (error) {
+      console.error("❌ Manuel güncelleme kontrolü hatası:", error);
       if (logger) logger.error("Manuel güncelleme kontrolü hatası:", error);
       return { error: error.message };
     }
   }
   return {
-    error:
-      "Development modda güncelleme kontrolü yapılamaz veya auto-updater yok",
+    error: "Auto-updater mevcut değil",
   };
 });
 
