@@ -10,7 +10,7 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --publish=never",
-    "dist-publish": "electron-builder --publish=always",
+    "dist-publish": "node publish.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "electron-rebuild",
     "package": "electron-packager . Tudu --platform=win32 --arch=x64 --out=dist --overwrite --icon=icon.ico",
