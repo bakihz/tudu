@@ -79,7 +79,12 @@ app.on("ready", () => {
       // Development test için - force enable for testing
       if (process.env.NODE_ENV === "development" || !app.isPackaged) {
         console.log("Development mode: Auto-updater etkinleştiriliyor...");
-        // Development'ta da çalışması için force enable
+        // Force enable auto-updater in development mode
+        Object.defineProperty(app, "isPackaged", {
+          get() {
+            return true; // Fake that the app is packaged for auto-updater
+          },
+        });
       }
 
       // Güncelleme kontrolü - uygulama başladığında bir kez
@@ -87,6 +92,8 @@ app.on("ready", () => {
         try {
           console.log("İlk güncelleme kontrolü başlatılıyor...");
           console.log("Mevcut versiyon:", require("./package.json").version);
+          console.log("isDev:", !app.isPackaged);
+          console.log("isPackaged (overridden):", app.isPackaged);
           autoUpdater.checkForUpdatesAndNotify();
         } catch (error) {
           console.error("İlk güncelleme kontrolü hatası:", error.message);
