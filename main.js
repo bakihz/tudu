@@ -27,6 +27,16 @@ try {
   // Auto-updater olmadan da uygulama çalışabilir
 }
 
+// Fallback console logger if file logger fails
+if (!logger) {
+  logger = {
+    info: console.log,
+    error: console.error,
+    warn: console.warn,
+    debug: console.debug,
+  };
+}
+
 let win;
 let tray = null;
 let isQuiting = false;
@@ -74,16 +84,24 @@ app.on("ready", () => {
 
       // Güncelleme kontrolü - uygulama başladığında bir kez
       setTimeout(() => {
-        console.log("İlk güncelleme kontrolü başlatılıyor...");
-        console.log("Mevcut versiyon:", require("./package.json").version);
-        autoUpdater.checkForUpdatesAndNotify();
+        try {
+          console.log("İlk güncelleme kontrolü başlatılıyor...");
+          console.log("Mevcut versiyon:", require("./package.json").version);
+          autoUpdater.checkForUpdatesAndNotify();
+        } catch (error) {
+          console.error("İlk güncelleme kontrolü hatası:", error.message);
+        }
       }, 3000); // 3 saniye bekle
 
       // Her 2 dakikada bir güncelleme kontrol et (test için)
       setInterval(() => {
-        console.log("Periyodik güncelleme kontrolü...");
-        console.log("Mevcut versiyon:", require("./package.json").version);
-        autoUpdater.checkForUpdatesAndNotify();
+        try {
+          console.log("Periyodik güncelleme kontrolü...");
+          console.log("Mevcut versiyon:", require("./package.json").version);
+          autoUpdater.checkForUpdatesAndNotify();
+        } catch (error) {
+          console.error("Periyodik güncelleme kontrolü hatası:", error.message);
+        }
       }, 2 * 60 * 1000); // 2 minutes
 
       console.log("Auto-updater başlatıldı");
