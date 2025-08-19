@@ -1,113 +1,227 @@
+/* Hide admin-only by default, show for admin */
+.admin-only {
+  display: none !important;
+}
+body.admin-type .admin-only {
+  display: flex !important;
+}
+
+html,
 body {
-  background: #222;
-  color: #fff;
+  height: 100%;
+  color: #fff !important;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 10px;
+  padding: 0;
+  overflow-x: hidden;
 }
-.dashboard-container {
-  border: 1px solid #888;
-  padding: 8px;
-  background: #181818;
-  display: flex;
-  flex-direction: row;
-  min-height: 95vh;
+
+body {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
 }
-.sidebar {
-  min-width: 180px;
-  background: #181818;
-  border-right: 1px solid #444;
-  padding: 16px 8px 8px 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  font-size: 1.1rem;
-  justify-content: flex-start;
-}
+
 .main-content {
-  flex: 1;
-  padding: 0 0 0 16px;
+  margin-left: 0;
+  padding: 10px;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  height: calc(100vh - 20px);
+  max-width: none;
+  background: rgba(20, 30, 40, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(13, 26, 32, 0.8);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  color: #fff !important;
+  padding: 15px;
+  border: none;
+  margin: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
+
+.dashboard-container {
+  border: none;
+  padding: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.finance-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
 .calendar-table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  table-layout: fixed;
 }
+
 .calendar-table th,
 .calendar-table td {
-  border: 1px solid #444;
-  padding: 8px 10px;
-  min-width: 120px;
+  border: 1px solid rgba(0, 191, 174, 0.2);
+  padding: 8px;
   vertical-align: top;
-  font-size: 0.98rem;
+  font-size: 0.85rem;
+  width: 14.28%;
 }
+
 .calendar-table th {
-  background: #222;
+  background: rgba(0, 191, 174, 0.3);
   font-weight: 600;
   text-align: center;
+  color: #fff;
+  padding: 10px 8px;
 }
+
 .calendar-table td {
-  background: #181818;
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  min-height: 60px;
 }
-.calendar-row {
-  height: 43vh;
+
+.calendar-row td {
+  height: 600px;
 }
+
 .balance-row {
-  display: flex;
-  width: 100%;
-  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 8px;
+  margin: 8px 0;
 }
+
 .balance-cell {
-  flex: 6;
-  border: 1px solid #444;
-  background: #181818;
-  padding: 28px 0;
+  border: 1px solid rgba(0, 191, 174, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 10px;
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 0.95rem;
+  color: #fff;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.small-cell {
-  flex: 2 !important;
-  width: 200px;
+
+.balance-cell:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 191, 174, 0.2);
 }
-.balance-cell:not(:last-child) {
-  border-right: none;
-}
+
 .bank-table {
   width: 100%;
-  height: 30vh;
   border-collapse: collapse;
-  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
+
 .bank-table th,
 .bank-table td {
-  border: 1px solid #444;
-  padding: 8px 10px;
+  border: 1px solid rgba(0, 191, 174, 0.2);
+  padding: 10px 8px;
   text-align: center;
-  font-size: 0.97rem;
+  font-size: 0.85rem;
 }
+
 .bank-table th {
-  background: #222;
-  font-weight: 500;
+  background: rgba(0, 191, 174, 0.3);
+  font-weight: 600;
+  color: #fff;
 }
+
 .bank-table td {
-  background: #181818;
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
 }
-@media (max-width: 900px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-  .sidebar {
-    flex-direction: row;
-    border-right: none;
-    border-bottom: 1px solid #444;
-    min-width: 0;
-    padding: 8px;
-    gap: 12px;
-  }
+
+.version-footer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  font-size: 12px;
+  color: #333 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.version-footer span {
+  display: block;
+  text-align: right;
+  color: #333 !important;
+}
+
+.version-date {
+  font-size: 10px;
+  color: #666 !important;
+  margin-top: 2px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
   .main-content {
+    margin-left: 0;
     padding: 0;
+  }
+
+  .card {
+    padding: 15px;
+    border-radius: 0;
+  }
+
+  .balance-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin: 10px 0;
+  }
+
+  .balance-cell {
+    padding: 15px 10px;
+    font-size: 0.9rem;
+  }
+
+  .calendar-table th,
+  .calendar-table td {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .calendar-row td {
+    height: 80px;
+  }
+
+  .bank-table th,
+  .bank-table td {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    margin-left: 200px;
   }
 }

@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <title>Payment Calendar</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' http://localhost:3000; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' http://localhost:3000;"
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -13,67 +17,106 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="../src/styles/global.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Variables.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Sidebar.css" />
     <link rel="stylesheet" href="../src/styles/Finance/PaymentCalendar.css" />
   </head>
   <body>
-    <div class="container">
-      <div class="sidebar">
-        <a href="./finance-overview.html" class="sidebar-link"
-          >Finansal Genel Bakış</a
-        >
-        <a href="./banks-overview.html" class="sidebar-link"
-          >Bankalar Tablosu</a
-        >
-        <a href="./tasks.html" class="sidebar-link">Görevler</a>
-        <a href="./reports-dashboard.html" class="sidebar-link"
-          >Raporlar Dashboard</a
-        >
-        <a href="./chatrooms.html" class="sidebar-link">Chatrooms</a>
-      </div>
-      <div class="topbar">
-        <div class="calendar-controls">
-          <button>&lt;</button>
-          <span class="month-label">HAZİRAN 2025</span>
-          <button>&gt;</button>
+    <!-- Side Navigation -->
+    <nav id="side-nav">
+      <h4 id="current-user-name"></h4>
+      <a href="../public/finance-overview.html" class="nav-link admin-only"
+        >Finans</a
+      >
+      <a href="admin-settings.html" class="nav-link admin-only">Kullanıcılar</a>
+      <a href="tasks.html" class="nav-link admin-only">Görevler</a>
+      <a href="stock-report.html" class="nav-link admin-only">Ayarlar</a>
+      <a href="user-settings.html" class="nav-link">Kullanıcı Ayarları</a>
+      <a href="#" id="logout-link" class="nav-link text-danger">Çıkış yap</a>
+    </nav>
+
+    <div class="main-content">
+      <div class="card container">
+        <div class="topbar">
+          <div class="calendar-controls">
+            <button>&lt;</button>
+            <span class="month-label">HAZİRAN 2025</span>
+            <button>&gt;</button>
+          </div>
+        </div>
+        <div class="calendar">
+          <!-- 6 columns x 5 rows = 30 cells -->
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        <div class="payments">
+          <div class="payments-header">payments</div>
+          <div class="payments-content">payments</div>
+        </div>
+
+        <!-- Version Info Footer -->
+        <div class="version-footer">
+          <span id="version-info">Tudu v1.0.14</span>
+          <span class="version-date">© 2025 Bakihz</span>
         </div>
       </div>
-      <div class="calendar">
-        <!-- 6 columns x 5 rows = 30 cells -->
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-      <div class="payments">
-        <div class="payments-header">payments</div>
-        <div class="payments-content">payments</div>
-      </div>
     </div>
+
+    <script>
+      // Check if user is logged in and get user info
+      const currentUser = JSON.parse(
+        localStorage.getItem("currentUser") || "{}"
+      );
+
+      // Set current user name in sidebar
+      const userNameElement = document.getElementById("current-user-name");
+      if (userNameElement && currentUser.username) {
+        userNameElement.textContent = currentUser.username;
+      }
+
+      // Show/hide admin-only elements based on user type
+      if (currentUser.user_type === "admin") {
+        document.body.classList.add("admin-type");
+      }
+
+      // Logout functionality
+      document
+        .getElementById("logout-link")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("authToken");
+          window.location.href = "login.html";
+        });
+    </script>
   </body>
 </html>

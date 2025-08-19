@@ -7,34 +7,51 @@
   position: fixed;
   left: 0;
   top: 0;
-  background: rgba(20, 30, 40, 0.97) !important;
+  background: rgba(15, 32, 39, 0.95) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: #fff !important;
-  z-index: 10;
-  border-right: none !important;
+  z-index: 1050;
+  border-right: 1px solid rgba(0, 191, 174, 0.2) !important;
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
 }
+
 #side-nav h4 {
   margin-bottom: 32px;
   font-size: 1.2rem;
   font-weight: bold;
+  color: #fff !important;
 }
+
 #side-nav .nav-link {
   color: #fff !important;
   text-decoration: none;
   margin-bottom: 16px;
   font-size: 1rem;
-  transition: color 0.2s;
-  display: block;
+  transition: all 0.2s ease;
+  display: block !important;
+  padding: 12px 16px;
+  border-radius: 8px;
 }
+
 #side-nav .nav-link:hover,
 #side-nav .nav-link.active {
   background: linear-gradient(90deg, #00bfae33 0%, #5fffe633 100%) !important;
   color: #fff !important;
-  border-radius: 4px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.08);
 }
+
 #side-nav .text-danger {
   color: #ff4d4f !important;
   margin-top: auto;
 }
+
+#side-nav .text-danger:hover {
+  background: rgba(255, 77, 79, 0.1) !important;
+  color: #ff4d4f !important;
+}
+
 .add-task-sidebar,
 .edit-task-sidebar {
   background: rgba(20, 30, 40, 0.98) !important;
@@ -83,48 +100,31 @@
   resize: none;
 }
 
-/* Side navigation styling */
-#side-nav {
-  height: 100vh;
-  min-width: 220px;
-  position: fixed;
-  left: 0;
-  top: 0;
-  border-right: none !important;
-  background: #f8f9fa;
-  z-index: 1050;
-}
-
-#side-nav .nav-link {
-  color: #333;
-  font-weight: 500;
-}
-
-#side-nav .nav-link.active,
-#side-nav .nav-link:hover {
-  background: #e9ecef;
-  color: #007bff;
-  border-radius: 4px;
-}
-
 .add-task-sidebar {
   position: fixed;
   top: 0;
   right: -450px; /* Hidden by default */
   width: 450px;
   height: 100vh;
-  background: #fff;
+  background: rgba(20, 30, 40, 0.98) !important;
+  color: #fff !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
   transition: right 0.3s;
   z-index: 2000;
   overflow-y: auto;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
 }
+
 .add-task-sidebar.open {
   right: 0;
 }
+
 .add-task-sidebar .sidebar-header {
   padding: 20px 20px 0 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(0, 191, 174, 0.12);
+  margin-bottom: 18px;
 }
 
 .edit-task-sidebar {
@@ -133,19 +133,27 @@
   right: -450px;
   width: 450px;
   height: 100vh;
-  background: #fff;
+  background: rgba(20, 30, 40, 0.98) !important;
+  color: #fff !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.08);
   transition: right 0.3s;
   z-index: 2100;
   overflow-y: auto;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
 }
+
 .edit-task-sidebar.open {
   right: 0;
 }
+
 .edit-task-sidebar .sidebar-header {
   padding: 20px 20px 0 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid rgba(0, 191, 174, 0.12);
+  margin-bottom: 18px;
 }
+
 .edit-pencil {
   cursor: pointer;
   margin-left: 10px;
@@ -153,32 +161,12 @@
   font-size: 1.1em;
   vertical-align: middle;
 }
+
 .edit-pencil:hover {
   color: #0056b3;
 }
+
 .edit-input {
   width: 70%;
   margin-right: 10px;
-}
-.card,
-.add-task-sidebar,
-.edit-task-sidebar {
-  background: rgba(20, 30, 40, 0.85) !important;
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1.5px solid rgba(0, 191, 174, 0.1);
-  box-shadow: 0 8px 40px #0d1a20, 0 1.5px 8px #314d60, 0 0 32px 0 #00bfae22;
-}
-
-/* Sidebar header */
-.add-task-sidebar .sidebar-header,
-.edit-task-sidebar .sidebar-header {
-  border-bottom: 1px solid rgba(0, 191, 174, 0.12);
-  margin-bottom: 18px;
-}
-#side-nav .nav-link.active,
-#side-nav .nav-link:hover {
-  background: linear-gradient(90deg, #00bfae33 0%, #5fffe633 100%) !important;
-  color: #fff !important;
-  box-shadow: 0 2px 12px 0 rgba(0, 191, 174, 0.08);
 }

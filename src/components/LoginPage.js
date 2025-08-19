@@ -7,8 +7,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Check if the user is already logged in
 if (localStorage.getItem("userId")) {
-  // Redirect to the main app page
-  window.location.href = "tasks.html";
+  // Redirect based on user type
+  const userType = localStorage.getItem("userType");
+  if (userType === "admin") {
+    window.location.href = "admin-dashboard.html";
+  } else {
+    window.location.href = "users-dashboard.html";
+  }
 }
 
 document
@@ -43,7 +48,13 @@ document
         localStorage.setItem("userId", result.userId);
         localStorage.setItem("userType", result.userType);
         localStorage.setItem("userName", result.userName);
-        window.location.href = "./tasks.html";
+
+        // Redirect based on user type
+        if (result.userType === "admin") {
+          window.location.href = "./admin-dashboard.html";
+        } else {
+          window.location.href = "./users-dashboard.html";
+        }
       } else {
         showCustomAlert(
           result.message || "Invalid username or password. Please try again."

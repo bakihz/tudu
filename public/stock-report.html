@@ -3,27 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <title>Stok Raporu Excel Tablosu</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' http://localhost:3000; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' http://localhost:3000;"
+    />
+    <link rel="stylesheet" href="../src/styles/global.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Variables.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Sidebar.css" />
     <link rel="stylesheet" href="../src/styles/Reports/StockReport.css" />
   </head>
   <body>
-    <div class="container">
-      <!-- Go Back Navigation -->
-      <div class="navigation-header">
-        <button class="btn btn-back" onclick="goBack()">
-          ← Geri Dön
-        </button>
-        <button class="btn btn-home" onclick="goHome()">
-          🏠 Ana Menü
-        </button>
-      </div>
-      
-      <h2>Stok Raporu Excel Tablosu</h2>
-      
-      <div id="loading">🔄 Veriler yükleniyor...</div>
-      <div id="error-message"></div>
-      
-      <label>SQL Sorgunuz:</label>
-      <textarea id="sql-query" readonly>
+    <!-- Side Navigation -->
+    <nav id="side-nav">
+      <h4 id="current-user-name"></h4>
+      <a href="../public/finance-overview.html" class="nav-link admin-only"
+        >Finans</a
+      >
+      <a href="admin-settings.html" class="nav-link admin-only">Kullanıcılar</a>
+      <a href="tasks.html" class="nav-link admin-only">Görevler</a>
+      <a href="stock-report.html" class="nav-link admin-only active">Ayarlar</a>
+      <a href="user-settings.html" class="nav-link">Kullanıcı Ayarları</a>
+      <a href="#" id="logout-link" class="nav-link text-danger">Çıkış yap</a>
+    </nav>
+
+    <div class="main-content">
+      <div class="container">
+        <!-- Go Back Navigation -->
+        <div class="navigation-header">
+          <button class="btn btn-back" onclick="goBack()">← Geri Dön</button>
+          <button class="btn btn-home" onclick="goHome()">🏠 Ana Menü</button>
+        </div>
+
+        <h2>Stok Raporu Excel Tablosu</h2>
+
+        <div id="loading">🔄 Veriler yükleniyor...</div>
+        <div id="error-message"></div>
+
+        <label>SQL Sorgunuz:</label>
+        <textarea id="sql-query" readonly>
 SELECT * FROM
 (
 SELECT ITM.CODE AS KOD, ITM.NAME AS AÇIKLAMA, ITM.STGRPCODE AS GRUP,ITM.CYPHCODE AS [Y.KODU],ITM.SPECODE AS [Ö.KOD],ITM.SPECODE2 AS [Ö.KOD-2],ITM.SPECODE3 AS [Ö.KOD-3], ITM.SPECODE4 AS [Ö.KOD-4], ITM.SPECODE5 AS [Ö.KOD-5],
@@ -65,128 +82,161 @@ WHERE
 (DYNMQRY.MONTH_ IN (1,2,3,4,5,6,7,8,9,10,11,12))
 AND (DYNMQRY.[YIL] = 2025)
 ORDER BY DYNMQRY.[KOD] ASC, DYNMQRY.[AÇIKLAMA] ASC, DYNMQRY.[GRUP] ASC, DYNMQRY.[Ö.KOD] ASC, DYNMQRY.[Ö.KOD-2] ASC, DYNMQRY.[Ö.KOD-3] ASC
-      </textarea>
+      </textarea
+        >
 
-      <div class="btn-group">
-        <button class="btn btn-success" onclick="fetchStockReport()">
-          📊 Database'den Veri Çek
-        </button>
+        <div class="btn-group">
+          <button class="btn btn-success" onclick="fetchStockReport()">
+            📊 Database'den Veri Çek
+          </button>
+        </div>
+
+        <label>SQL Sonucu (CSV olarak yapıştırın):</label>
+        <textarea
+          id="csv-input"
+          placeholder="Buraya SQL çıktısını CSV olarak yapıştırın veya yukarıdaki butonu kullanarak database'den otomatik çekin..."
+        ></textarea>
+
+        <div class="btn-group">
+          <button class="btn" onclick="csvToTable()">Tabloya Dönüştür</button>
+          <button class="btn" onclick="exportTableToExcel()">
+            Excel'e Aktar
+          </button>
+        </div>
+
+        <div id="table-container" style="margin-top: 24px"></div>
+
+        <!-- Version Info Footer -->
+        <div class="version-footer">
+          <span id="version-info">Tudu v1.0.14</span>
+          <span class="version-date">© 2025 Bakihz</span>
+        </div>
       </div>
-
-      <label>SQL Sonucu (CSV olarak yapıştırın):</label>
-      <textarea
-        id="csv-input"
-        placeholder="Buraya SQL çıktısını CSV olarak yapıştırın veya yukarıdaki butonu kullanarak database'den otomatik çekin..."
-      ></textarea>
-      
-      <div class="btn-group">
-        <button class="btn" onclick="csvToTable()">Tabloya Dönüştür</button>
-        <button class="btn" onclick="exportTableToExcel()">Excel'e Aktar</button>
-      </div>
-
-    <div id="table-container" style="margin-top: 24px"></div>
-    
-    <!-- Version Info Footer -->
-    <div class="version-footer">
-      <span id="version-info">Tudu v1.0.13</span>
-      <span class="version-date">© 2025 Bakihz</span>
     </div>
 
     <script>
+      // Check if user is logged in and get user info
+      const currentUser = JSON.parse(
+        localStorage.getItem("currentUser") || "{}"
+      );
+
+      // Set current user name in sidebar
+      const userNameElement = document.getElementById("current-user-name");
+      if (userNameElement && currentUser.username) {
+        userNameElement.textContent = currentUser.username;
+      }
+
+      // Show/hide admin-only elements based on user type
+      if (currentUser.user_type === "admin") {
+        document.body.classList.add("admin-type");
+      }
+
+      // Logout functionality
+      document
+        .getElementById("logout-link")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("authToken");
+          window.location.href = "login.html";
+        });
+
       // Database'den stok raporu verisini çek
       async function fetchStockReport() {
-        const loadingDiv = document.getElementById('loading');
-        const errorDiv = document.getElementById('error-message');
-        
+        const loadingDiv = document.getElementById("loading");
+        const errorDiv = document.getElementById("error-message");
+
         try {
           // Loading göster
-          if (loadingDiv) loadingDiv.style.display = 'block';
-          if (errorDiv) errorDiv.style.display = 'none';
+          if (loadingDiv) loadingDiv.style.display = "block";
+          if (errorDiv) errorDiv.style.display = "none";
 
-          const response = await fetch('/api/stock-report', {
-            method: 'POST',
+          const response = await fetch("/api/stock-report", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               year: 2025,
-              months: [1,2,3,4,5,6,7,8,9,10,11,12]
-            })
+              months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            }),
           });
 
           const result = await response.json();
-          
+
           if (!response.ok) {
-            throw new Error(result.message || 'Veri çekilirken hata oluştu');
+            throw new Error(result.message || "Veri çekilirken hata oluştu");
           }
 
           if (result.success) {
             // Veriyi tabloya dönüştür
             displayDataAsTable(result.data, result.columns);
-            
+
             // CSV input alanını da doldur (isteğe bağlı)
             const csvData = convertToCSV(result.data, result.columns);
-            document.getElementById('csv-input').value = csvData;
-            
+            document.getElementById("csv-input").value = csvData;
+
             console.log(`${result.count} kayıt başarıyla yüklendi.`);
           } else {
-            throw new Error(result.message || 'Beklenmeyen hata');
+            throw new Error(result.message || "Beklenmeyen hata");
           }
-          
         } catch (error) {
-          console.error('Stok raporu yüklenirken hata:', error);
+          console.error("Stok raporu yüklenirken hata:", error);
           if (errorDiv) {
             errorDiv.textContent = `Hata: ${error.message}`;
-            errorDiv.style.display = 'block';
+            errorDiv.style.display = "block";
           } else {
-            alert('Stok raporu yüklenirken hata oluştu: ' + error.message);
+            alert("Stok raporu yüklenirken hata oluştu: " + error.message);
           }
         } finally {
           // Loading gizle
-          if (loadingDiv) loadingDiv.style.display = 'none';
+          if (loadingDiv) loadingDiv.style.display = "none";
         }
       }
 
       // Veriyi tablo olarak göster
       function displayDataAsTable(data, columns) {
         if (!data || data.length === 0) {
-          document.getElementById('table-container').innerHTML = '<p>Veri bulunamadı.</p>';
+          document.getElementById("table-container").innerHTML =
+            "<p>Veri bulunamadı.</p>";
           return;
         }
 
-        let html = '<table><thead><tr>';
-        columns.forEach(col => {
+        let html = "<table><thead><tr>";
+        columns.forEach((col) => {
           html += `<th>${col}</th>`;
         });
-        html += '</tr></thead><tbody>';
+        html += "</tr></thead><tbody>";
 
-        data.forEach(row => {
-          html += '<tr>';
-          columns.forEach(col => {
-            const value = row[col] !== null && row[col] !== undefined ? row[col] : '';
+        data.forEach((row) => {
+          html += "<tr>";
+          columns.forEach((col) => {
+            const value =
+              row[col] !== null && row[col] !== undefined ? row[col] : "";
             html += `<td contenteditable="true">${value}</td>`;
           });
-          html += '</tr>';
+          html += "</tr>";
         });
 
-        html += '</tbody></table>';
-        document.getElementById('table-container').innerHTML = html;
+        html += "</tbody></table>";
+        document.getElementById("table-container").innerHTML = html;
       }
 
       // JSON verisini CSV formatına çevir
       function convertToCSV(data, columns) {
-        if (!data || data.length === 0) return '';
-        
-        let csv = columns.map(col => `"${col}"`).join(';') + '\n';
-        
-        data.forEach(row => {
-          const values = columns.map(col => {
-            const value = row[col] !== null && row[col] !== undefined ? row[col] : '';
+        if (!data || data.length === 0) return "";
+
+        let csv = columns.map((col) => `"${col}"`).join(";") + "\n";
+
+        data.forEach((row) => {
+          const values = columns.map((col) => {
+            const value =
+              row[col] !== null && row[col] !== undefined ? row[col] : "";
             return `"${String(value).replace(/"/g, '""')}"`;
           });
-          csv += values.join(';') + '\n';
+          csv += values.join(";") + "\n";
         });
-        
+
         return csv;
       }
 
@@ -242,75 +292,14 @@ ORDER BY DYNMQRY.[KOD] ASC, DYNMQRY.[AÇIKLAMA] ASC, DYNMQRY.[GRUP] ASC, DYNMQRY
           window.history.back();
         } else {
           // If no history, go to tasks page (main menu)
-          window.location.href = 'tasks.html';
+          window.location.href = "tasks.html";
         }
       }
 
       function goHome() {
         // Go to main tasks page
-        window.location.href = 'tasks.html';
+        window.location.href = "tasks.html";
       }
     </script>
-
-    <style>
-      .navigation-header {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #ddd;
-      }
-
-      .btn-back, .btn-home {
-        padding: 8px 16px;
-        border: 1px solid #007bff;
-        background-color: #007bff;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s;
-      }
-
-      .btn-back:hover, .btn-home:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-      }
-
-      .btn-home {
-        background-color: #28a745;
-        border-color: #28a745;
-      }
-
-      .btn-home:hover {
-        background-color: #1e7e34;
-        border-color: #1e7e34;
-      }
-      
-      .version-footer {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        font-size: 12px;
-        color: #666;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 5px 10px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-        z-index: 1000;
-      }
-      
-      .version-footer span {
-        display: block;
-        text-align: right;
-      }
-      
-      .version-date {
-        font-size: 10px;
-        color: #999;
-        margin-top: 2px;
-      }
-    </style>
-
   </body>
 </html>

@@ -4,68 +4,118 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Ayarları - Kullanıcı Şifre Yönetimi</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' http://localhost:3000; script-src 'self' 'unsafe-inline'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' http://localhost:3000;"
+    />
+    <link rel="stylesheet" href="../src/styles/global.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Variables.css" />
+    <link rel="stylesheet" href="../src/styles/Tasks/Sidebar.css" />
     <link rel="stylesheet" href="../src/styles/Settings/AdminSettings.css" />
   </head>
   <body>
-    <div class="admin-container">
-      <!-- Go Back Navigation -->
-      <div class="navigation-header">
-        <button class="btn btn-back" onclick="goBack()">← Geri Dön</button>
-        <button class="btn btn-home" onclick="goHome()">🏠 Ana Menü</button>
-      </div>
+    <!-- Side Navigation -->
+    <nav id="side-nav">
+      <h4 id="current-user-name">Admin</h4>
+      <a href="../public/finance-overview.html" class="nav-link admin-only"
+        >Finans</a
+      >
+      <a href="admin-settings.html" class="nav-link admin-only active"
+        >Kullanıcılar</a
+      >
+      <a href="tasks.html" class="nav-link admin-only">Görevler</a>
+      <a href="stock-report.html" class="nav-link admin-only">Ayarlar</a>
+      <a href="user-settings.html" class="nav-link">Kullanıcı Ayarları</a>
+      <a href="#" id="logout-link" class="nav-link text-danger">Çıkış yap</a>
+    </nav>
 
-      <div class="page-header">
-        <h1>🔐 Admin Ayarları - Kullanıcı Şifre Yönetimi</h1>
-        <p>Sistemdeki tüm kullanıcıların şifrelerini değiştirebilirsiniz</p>
-      </div>
-
-      <div id="alert-container"></div>
-      <div id="loading" class="loading">🔄 Veriler yükleniyor...</div>
-
-      <div class="users-section">
-        <div class="section-title">👥 Kullanıcı Listesi</div>
-        <div id="users-list" class="users-list">
-          <!-- Kullanıcılar buraya yüklenecek -->
+    <div class="main-content">
+      <div class="admin-container">
+        <!-- Go Back Navigation -->
+        <div class="navigation-header">
+          <button class="btn btn-back" onclick="goBack()">← Geri Dön</button>
+          <button class="btn btn-home" onclick="goHome()">🏠 Ana Menü</button>
         </div>
-      </div>
 
-      <div class="update-section">
-        <div class="section-title">🔄 Uygulama Güncellemeleri</div>
-        <div class="update-controls">
-          <button id="check-updates-btn" class="btn btn-primary">
-            Güncellemeleri Kontrol Et
-          </button>
-          <button
-            id="install-update-btn"
-            class="btn btn-success"
-            style="display: none"
-          >
-            Güncellemeyi Yükle ve Yeniden Başlat
-          </button>
-          <div id="update-status" class="update-status"></div>
-          <div
-            id="update-progress"
-            class="update-progress"
-            style="display: none"
-          >
-            <div class="progress-bar">
-              <div id="progress-fill" class="progress-fill"></div>
-            </div>
-            <div id="progress-text" class="progress-text">0%</div>
+        <div class="page-header">
+          <h1>🔐 Admin Ayarları - Kullanıcı Şifre Yönetimi</h1>
+          <p>Sistemdeki tüm kullanıcıların şifrelerini değiştirebilirsiniz</p>
+        </div>
+
+        <div id="alert-container"></div>
+        <div id="loading" class="loading">🔄 Veriler yükleniyor...</div>
+
+        <div class="users-section">
+          <div class="section-title">👥 Kullanıcı Listesi</div>
+          <div id="users-list" class="users-list">
+            <!-- Kullanıcılar buraya yüklenecek -->
           </div>
         </div>
-      </div>
 
-      <!-- Version Info Footer -->
-      <div class="version-footer">
-        <span id="version-info">Tudu v1.0.13</span>
-        <span class="version-date">© 2025 Bakihz</span>
+        <div class="update-section">
+          <div class="section-title">🔄 Uygulama Güncellemeleri</div>
+          <div class="update-controls">
+            <button id="check-updates-btn" class="btn btn-primary">
+              Güncellemeleri Kontrol Et
+            </button>
+            <button
+              id="install-update-btn"
+              class="btn btn-success"
+              style="display: none"
+            >
+              Güncellemeyi Yükle ve Yeniden Başlat
+            </button>
+            <div id="update-status" class="update-status"></div>
+            <div
+              id="update-progress"
+              class="update-progress"
+              style="display: none"
+            >
+              <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+              </div>
+              <div id="progress-text" class="progress-text">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Version Info Footer -->
+        <div class="version-footer">
+          <span id="version-info">Tudu v1.0.14</span>
+          <span class="version-date">© 2025 Bakihz</span>
+        </div>
       </div>
     </div>
 
     <script src="../src/components/Settings/AdminSettings.js"></script>
 
     <script>
+      // Check if user is logged in and get user info
+      const currentUser = JSON.parse(
+        localStorage.getItem("currentUser") || "{}"
+      );
+
+      // Set current user name in sidebar
+      const userNameElement = document.getElementById("current-user-name");
+      if (userNameElement && currentUser.username) {
+        userNameElement.textContent = currentUser.username;
+      }
+
+      // Show/hide admin-only elements based on user type
+      if (currentUser.user_type === "admin") {
+        document.body.classList.add("admin-type");
+      }
+
+      // Logout functionality
+      document
+        .getElementById("logout-link")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          localStorage.removeItem("currentUser");
+          localStorage.removeItem("authToken");
+          window.location.href = "login.html";
+        });
+
       // Navigation functions
       function goBack() {
         // Check if there's a previous page in history
@@ -82,67 +132,5 @@
         window.location.href = "tasks.html";
       }
     </script>
-
-    <style>
-      .navigation-header {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #ddd;
-      }
-
-      .btn-back,
-      .btn-home {
-        padding: 8px 16px;
-        border: 1px solid #007bff;
-        background-color: #007bff;
-        color: white;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s;
-      }
-
-      .btn-back:hover,
-      .btn-home:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-      }
-
-      .btn-home {
-        background-color: #28a745;
-        border-color: #28a745;
-      }
-
-      .btn-home:hover {
-        background-color: #1e7e34;
-        border-color: #1e7e34;
-      }
-
-      .version-footer {
-        position: fixed;
-        bottom: 10px;
-        right: 10px;
-        font-size: 12px;
-        color: #666;
-        background: rgba(255, 255, 255, 0.9);
-        padding: 5px 10px;
-        border-radius: 4px;
-        border: 1px solid #ddd;
-        z-index: 1000;
-      }
-
-      .version-footer span {
-        display: block;
-        text-align: right;
-      }
-
-      .version-date {
-        font-size: 10px;
-        color: #999;
-        margin-top: 2px;
-      }
-    </style>
   </body>
 </html>
