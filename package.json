@@ -14,7 +14,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "electron-rebuild",
     "package": "electron-packager . Tudu --platform=win32 --arch=x64 --out=dist --overwrite --icon=icon.ico",
-    "release": "npm version patch && git push && git push --tags"
+    "release": "npm version patch && git push && git push --tags",
+    "android:copy": "npx cap copy android",
+    "android:open": "npx cap open android",
+    "android:run": "npx cap run android"
   },
   "build": {
     "appId": "com.haft.tudu",
@@ -60,6 +63,9 @@
     "electron-updater": "^6.6.2"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.3",
+    "@capacitor/cli": "^7.4.3",
+    "@capacitor/core": "^7.4.3",
     "auto-launch": "^5.0.6",
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",

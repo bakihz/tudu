@@ -1,0 +1,26 @@
+.modal > div {
+  background: #1b2b38 !important;
+  color: #fff !important;
+}
+#custom-interval-modal.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+#custom-interval-modal .modal > div,
+#custom-interval-modal > div {
+  background: #18232e;
+  color: #fff;
+  border-radius: 16px;
+  padding: 32px 24px;
+  min-width: 320px;
+  box-shadow: 0 8px 32px #000a;
+}

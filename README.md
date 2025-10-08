@@ -62,3 +62,35 @@ npm run dist
 - Loglama sistemi `logs/` klasörüne kayıt tutar (Git'e dahil değil)
 - Rate limiting ve güvenlik header'ları aktif
 - Şifreler bcrypt ile hashlenmiştir
+
+## Android ile Çalıştırma
+
+Android uygulamasını derlemek ve çalıştırmak için aşağıdaki adımları izleyin:
+
+1. Web uygulamasını üretin (build):
+
+   ```bash
+   npm run build
+   ```
+
+2. Üretilen dosyaları Android projesine kopyalayın:
+
+   ```bash
+   npm run android:copy
+   ```
+
+3. Android projesini Android Studio'da açın:
+
+   ```bash
+   npm run android:open
+   ```
+
+4. Android Studio üzerinden bir emülatör veya gerçek cihaz seçip uygulamayı çalıştırın (Run > Run 'app').
+
+Alternatif olarak, terminalden doğrudan çalıştırmak için:
+
+   ```bash
+   npx cap run android
+   ```
+
+> Not: İlk defa çalıştırıyorsanız veya hata alırsanız, Android Studio'da projeyi "Sync Project with Gradle Files" ile senkronize edin ve eksik SDK/araçları yükleyin.
