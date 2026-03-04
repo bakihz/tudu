@@ -149,3 +149,4 @@ db.js
 # Log files
 logs/
 *.log
+.aider*
